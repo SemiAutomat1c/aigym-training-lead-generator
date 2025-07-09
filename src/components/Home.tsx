@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 // Custom component that combines Link and Button
@@ -41,7 +41,7 @@ const Home: React.FC = () => {
             size="lg" 
             className="px-5 py-3"
           >
-            Batch Message Generator
+            Batch Message Generator <Badge bg="danger">NEW!</Badge>
           </LinkButton>
         </div>
       </div>
@@ -55,6 +55,7 @@ const Home: React.FC = () => {
               <Card.Title>Input Lead Information</Card.Title>
               <Card.Text>
                 Enter details about your lead, including their name and interests you've noticed from their profile.
+                Support for both single leads and batch processing of up to 200 profiles.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -65,7 +66,8 @@ const Home: React.FC = () => {
               <div className="feature-icon">2</div>
               <Card.Title>Select Message Style</Card.Title>
               <Card.Text>
-                Choose from various message styles including standard or Singaporean English to better connect with your audience.
+                Choose from various message styles including standard or Singaporean English (Singlish) with authentic
+                local phrases like "wah", "lah", "sia", and "leh" to better connect with your audience.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -76,7 +78,8 @@ const Home: React.FC = () => {
               <div className="feature-icon">3</div>
               <Card.Title>Generate & Send</Card.Title>
               <Card.Text>
-                Our AI generates a personalized message that you can copy and send to potential gym training clients.
+                Our AI generates highly personalized messages that match the exact template required,
+                with handcrafted variations based on each lead's unique interests.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -89,12 +92,12 @@ const Home: React.FC = () => {
             <Card.Body>
               <Card.Title>Key Features</Card.Title>
               <ul>
-                <li>Personalized messages based on lead interests</li>
-                <li>Singaporean English localization</li>
-                <li>Instagram-friendly format</li>
-                <li>Proven message template that converts</li>
-                <li>Easy copy-and-paste functionality</li>
-                <li>Batch processing for multiple leads</li>
+                <li><strong>Batch processing</strong> - Handle up to 200 profiles at once</li>
+                <li><strong>Easy data input</strong> - Simple copy-paste of names and traits</li>
+                <li><strong>Singlish support</strong> - Authentic Singaporean English phrases</li>
+                <li><strong>Personalized messaging</strong> - Unique variations for each interest type</li>
+                <li><strong>Multiple platforms</strong> - Instagram and TikTok templates</li>
+                <li><strong>Perfect template matching</strong> - Follows the exact required format</li>
               </ul>
             </Card.Body>
           </Card>
@@ -104,12 +107,12 @@ const Home: React.FC = () => {
             <Card.Body>
               <Card.Title>Benefits</Card.Title>
               <ul>
-                <li>Save hours of writing personalized messages</li>
-                <li>Increase response rates with personalized outreach</li>
-                <li>Connect better with Singaporean fitness enthusiasts</li>
-                <li>Scale your gym training client acquisition</li>
-                <li>Improve your lead conversion rates</li>
-                <li>Process up to 100+ leads at once</li>
+                <li>Save hours with bulk processing of 100+ leads at once</li>
+                <li>Increase response rates with handcrafted personalized messages</li>
+                <li>Connect better with Singaporean fitness enthusiasts using Singlish</li>
+                <li>Scale your gym training client acquisition efficiently</li>
+                <li>Maintain message quality even with high volume</li>
+                <li>Easy export options for all your generated messages</li>
               </ul>
             </Card.Body>
           </Card>
@@ -120,6 +123,7 @@ const Home: React.FC = () => {
         <h2>Ready to Grow Your Gym Training Business?</h2>
         <p className="lead mb-4">
           Start creating personalized messages that convert fitness enthusiasts into clients.
+          Process up to 200 leads at once with our new batch generator!
         </p>
         <div className="d-flex justify-content-center gap-3">
           <LinkButton 
@@ -134,7 +138,7 @@ const Home: React.FC = () => {
             variant="success" 
             size="lg"
           >
-            Batch Generator
+            Batch Generator <Badge bg="danger">NEW!</Badge>
           </LinkButton>
         </div>
       </div>

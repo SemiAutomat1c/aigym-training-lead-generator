@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Card, Row, Col, Spinner, Alert, Table } from 'react-bootstrap';
+import { Container, Form, Button, Card, Row, Col, Spinner, Alert, Table, Badge } from 'react-bootstrap';
 import { generateMessage } from '../services/aiService';
 
 interface Lead {
@@ -18,12 +18,13 @@ interface BatchMessage {
 const BatchMessageGenerator: React.FC = () => {
   const [batchInput, setBatchInput] = useState<string>('');
   const [messageType, setMessageType] = useState('instagram');
-  const [tone, setTone] = useState('friendly');
+  const [tone, setTone] = useState('singaporean'); // Default to Singaporean English as per requirement
   const [template, setTemplate] = useState('Gym Training Offer');
   const [batchMessages, setBatchMessages] = useState<BatchMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
+  const MAX_PROFILES = 200; // Maximum number of profiles as per client requirements
 
   // Parse the batch input into an array of leads
   const parseLeads = (input: string): Lead[] => {
@@ -76,6 +77,11 @@ const BatchMessageGenerator: React.FC = () => {
     
     if (leads.length === 0) {
       setError('No valid leads found. Please check your input format.');
+      return;
+    }
+    
+    if (leads.length > MAX_PROFILES) {
+      setError(`Too many profiles (${leads.length}). Maximum allowed is ${MAX_PROFILES} for quality purposes.`);
       return;
     }
     
@@ -183,6 +189,14 @@ const BatchMessageGenerator: React.FC = () => {
       });
   };
 
+  // Calculate the number of leads from the current input
+  const calculateLeadCount = (): number => {
+    return parseLeads(batchInput).length;
+  };
+
+  const leadCount = calculateLeadCount();
+  const isOverLimit = leadCount > MAX_PROFILES;
+
   return (
     <Container>
       <h1 className="mb-4">Batch Message Generator</h1>
@@ -193,7 +207,12 @@ const BatchMessageGenerator: React.FC = () => {
         <Row>
           <Col md={6}>
             <Card className="mb-4">
-              <Card.Header>Batch Lead Information</Card.Header>
+              <Card.Header className="d-flex justify-content-between align-items-center">
+                <span>Batch Lead Information</span>
+                <Badge bg={isOverLimit ? "danger" : leadCount > 0 ? "success" : "secondary"}>
+                  {leadCount} / {MAX_PROFILES} Profiles
+                </Badge>
+              </Card.Header>
               <Card.Body>
                 <Form.Group className="mb-3">
                   <Form.Label>Enter multiple leads</Form.Label>
@@ -203,11 +222,15 @@ const BatchMessageGenerator: React.FC = () => {
                     value={batchInput}
                     onChange={(e) => setBatchInput(e.target.value)}
                     placeholder={`Format 1 (numbered):\n1. Ryan - musician, Singapore\n2. Mei Lin - chef, Singapore\n3. Rajesh - software engineer, Singapore\n\nFormat 2 (line by line):\nJohn Smith\nmusician, fitness enthusiast\nSingapore\n\nJane Doe\nphotographer, foodie\nSingapore`}
+                    isInvalid={isOverLimit}
                   />
-                  <Form.Text className="text-muted">
-                    Two formats accepted:
-                    <br />1. Numbered format: "1. Name - interests, location"
-                    <br />2. Line by line format: Name, Interests, Location (each on a separate line)
+                  <Form.Text className={isOverLimit ? "text-danger" : "text-muted"}>
+                    {isOverLimit ? 
+                      `Too many profiles (${leadCount}). Maximum allowed is ${MAX_PROFILES} for quality purposes.` : 
+                      `Two formats accepted:
+                      1. Numbered format: "1. Name - interests, location"
+                      2. Line by line format: Name, Interests, Location (each on a separate line)`
+                    }
                   </Form.Text>
                 </Form.Group>
               </Card.Body>
@@ -237,12 +260,12 @@ const BatchMessageGenerator: React.FC = () => {
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                   >
+                    <option value="singaporean">Singaporean English</option>
                     <option value="friendly">Friendly</option>
                     <option value="professional">Professional</option>
                     <option value="casual">Casual</option>
                     <option value="formal">Formal</option>
                     <option value="persuasive">Persuasive</option>
-                    <option value="singaporean">Singaporean English</option>
                   </Form.Select>
                 </Form.Group>
                 
@@ -264,7 +287,7 @@ const BatchMessageGenerator: React.FC = () => {
                 variant="primary" 
                 type="submit" 
                 size="lg"
-                disabled={isLoading}
+                disabled={isLoading || isOverLimit || leadCount === 0}
               >
                 {isLoading ? (
                   <>

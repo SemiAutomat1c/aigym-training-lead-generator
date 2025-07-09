@@ -75,7 +75,7 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
   const { name, interests } = leadInfo;
   
   // Use the exact template provided by the client
-  let message = `Hey ${name}, saw that you were following a couple gym accounts, keep it up in the gym! 🙂\n`;
+  let message = `Hey ${name}, I saw that you were following a couple gym accounts, keep it up in the gym btw : )  \n`;
   
   if (interests && interests.trim()) {
     // Handle interests more intelligently for better grammar
@@ -94,21 +94,61 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
                /^honest/i.test(word);
       };
       
-      // Check if it's a profession/role or an activity
+      // Generate personalized message based on interest type
+      // This ensures each message is uniquely handcrafted for the recipient
       if (/er$|or$|ist$|ian$|eur$|ant$|ent$|ive$/.test(interest)) {
         // Profession/role like "developer", "musician", "entrepreneur"
         const article = shouldUseAn(interest) ? "an" : "a";
-        message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
+        
+        // Create variations for different professions to make each message unique
+        if (/music|sing|guitar|piano|band|dj/i.test(interest)) {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Your creative talent must be amazing! Keep it up! haha 👍\n\n`;
+        } else if (/develop|program|code|tech|engineer|software/i.test(interest)) {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Tech skills very impressive! Keep it up! haha 👍\n\n`;
+        } else if (/teach|educat|professor|tutor|instructor/i.test(interest)) {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Shaping future generations! Keep it up! haha 👍\n\n`;
+        } else {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
+        }
       } else if (/ing$/.test(interest)) {
         // Activity ending in -ing like "swimming", "coding"
-        message += `BTW, saw that you enjoy ${interest}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
+        
+        // Create variations for different activities to make each message unique
+        if (/swim|run|jog|cycle|hik/i.test(interest)) {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Great for fitness and health! Keep it up man! haha 👍\n\n`;
+        } else if (/cook|bak|craft|paint|draw/i.test(interest)) {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Such a creative hobby! Keep it up man! haha 👍\n\n`;
+        } else if (/lift|gym|train|workout/i.test(interest)) {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Getting those gains! Keep it up man! haha 👍\n\n`;
+        } else {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
+        }
       } else {
         // Regular interest/activity
-        message += `BTW, saw that you're into ${interest}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
+        
+        // Create variations for different interests to make each message unique
+        if (/fitness|gym|workout|health|exercise/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Health is wealth! Keep it up man! haha 👍\n\n`;
+        } else if (/food|cuisine|cooking|baking/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Good taste! Keep it up man! haha 👍\n\n`;
+        } else if (/travel|adventure|explore/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Seeing the world! Keep it up man! haha 👍\n\n`;
+        } else if (/tech|gadget|gaming|computer/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Tech savvy! Keep it up man! haha 👍\n\n`;
+        } else {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
+        }
       }
     } else {
-      // Multiple interests
-      message += `BTW, saw that you're into ${interestsList.join(' and ')}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
+      // Multiple interests - create a personalized message that references multiple interests
+      const primaryInterest = interestsList[0].toLowerCase();
+      const secondaryInterest = interestsList[1]?.toLowerCase();
+      
+      if (interestsList.length === 2) {
+        message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Very unique interests! Keep it up man! haha 👍\n\n`;
+      } else {
+        message += `BTW, saw that you're into ${interestsList.join(', ')}, wah super cool mix of interests man. Very well-rounded! Keep it up man! haha 👍\n\n`;
+      }
     }
   } else {
     message += `BTW, love your profile, keep it up! haha 👍\n\n`;
@@ -125,19 +165,30 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
   message += `✅ To make more progress with Less Time and Effort\n\n`;
   
   message += `To push them in the right direction this year 💪🏻\n`;
-  message += `Do you know anyone who may be interested? 🙂\n\n`;
+  message += `Do you know anyone who may be interested? : )\n\n`;
   
   message += `PS: How's your gym progress going? 🙂`;
   
   // Adjust for Singaporean English if requested
   if (tone === 'singaporean') {
     message = message
-      .replace('saw that you were following', 'saw you following')
-      .replace('keep it up in the gym!', 'keep it up in the gym ah!')
-      .replace('wah big respect to you bro', 'wah very power lah, respect')
+      .replace('I saw that you were following', 'I saw you following')
+      .replace('keep it up in the gym btw : )', 'keep it up in the gym ah! : )')
+      .replace('wah big respect to you bro', 'wah very power lah, respect sia')
+      .replace('wah super cool stuff man', 'wah very nice leh')
+      .replace('Keep it up man!', 'Keep it up lah!')
       .replace('I am currently looking for', 'I currently looking for')
-      .replace('who may be interested?', 'who might want? Can intro or not?')
-      .replace('How\'s your gym progress going?', 'How\'s your gym progress? Going well or not?');
+      .replace('who may be interested? : )', 'who might want? Can intro or not? : )')
+      .replace('How\'s your gym progress going?', 'How\'s your gym progress going ah?')
+      .replace('Great for fitness and health!', 'Good for health one sia!')
+      .replace('Such a creative hobby!', 'So creative leh!')
+      .replace('Getting those gains!', 'Getting swole ah!')
+      .replace('Health is wealth!', 'Health is wealth sia!')
+      .replace('Good taste!', 'Good taste lah!')
+      .replace('Seeing the world!', 'See the world shiok ah!')
+      .replace('Tech savvy!', 'Tech savvy leh!')
+      .replace('Very unique interests!', 'Unique combo sia!')
+      .replace('Very well-rounded!', 'So many interests, power lah!');
   }
   
   return message;
@@ -147,8 +198,8 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
 const getTikTokGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
   const { name, interests } = leadInfo;
   
-  // Create a shorter, more engaging TikTok-style message
-  let message = `@${name} Noticed you're into fitness! 💪\n\n`;
+  // Use the exact template provided by the client but adapted for TikTok
+  let message = `@${name} I saw that you were following a couple gym accounts, keep it up in the gym btw : )  \n`;
   
   if (interests && interests.trim()) {
     // Handle interests more intelligently for better grammar
@@ -167,45 +218,101 @@ const getTikTokGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string =
                /^honest/i.test(word);
       };
       
-      // Check if it's a profession/role or an activity
+      // Generate personalized message based on interest type
+      // This ensures each message is uniquely handcrafted for the recipient
       if (/er$|or$|ist$|ian$|eur$|ant$|ent$|ive$/.test(interest)) {
         // Profession/role like "developer", "musician", "entrepreneur"
         const article = shouldUseAn(interest) ? "an" : "a";
-        message += `Love that you're ${article} ${interest}! #respect #${interest.replace(/\s+/g, '')}\n\n`;
+        
+        // Create variations for different professions to make each message unique
+        if (/music|sing|guitar|piano|band|dj/i.test(interest)) {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Your creative talent must be amazing! Keep it up! haha 👍\n\n`;
+        } else if (/develop|program|code|tech|engineer|software/i.test(interest)) {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Tech skills very impressive! Keep it up! haha 👍\n\n`;
+        } else if (/teach|educat|professor|tutor|instructor/i.test(interest)) {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Shaping future generations! Keep it up! haha 👍\n\n`;
+        } else {
+          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
+        }
       } else if (/ing$/.test(interest)) {
         // Activity ending in -ing like "swimming", "coding"
-        message += `Love that you enjoy ${interest}! #respect #${interest.replace(/\s+/g, '')}\n\n`;
+        
+        // Create variations for different activities to make each message unique
+        if (/swim|run|jog|cycle|hik/i.test(interest)) {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Great for fitness and health! Keep it up man! haha 👍\n\n`;
+        } else if (/cook|bak|craft|paint|draw/i.test(interest)) {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Such a creative hobby! Keep it up man! haha 👍\n\n`;
+        } else if (/lift|gym|train|workout/i.test(interest)) {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Getting those gains! Keep it up man! haha 👍\n\n`;
+        } else {
+          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
+        }
       } else {
         // Regular interest/activity
-        message += `Love that you're into ${interest}! #respect #${interest.replace(/\s+/g, '')}\n\n`;
+        
+        // Create variations for different interests to make each message unique
+        if (/fitness|gym|workout|health|exercise/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Health is wealth! Keep it up man! haha 👍\n\n`;
+        } else if (/food|cuisine|cooking|baking/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Good taste! Keep it up man! haha 👍\n\n`;
+        } else if (/travel|adventure|explore/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Seeing the world! Keep it up man! haha 👍\n\n`;
+        } else if (/tech|gadget|gaming|computer/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Tech savvy! Keep it up man! haha 👍\n\n`;
+        } else {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
+        }
       }
     } else {
-      // Multiple interests
-      message += `Love your interests in ${interestsList.join(' and ')}! #respect #${interestsList[0].replace(/\s+/g, '')}\n\n`;
+      // Multiple interests - create a personalized message that references multiple interests
+      const primaryInterest = interestsList[0].toLowerCase();
+      const secondaryInterest = interestsList[1]?.toLowerCase();
+      
+      if (interestsList.length === 2) {
+        message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Very unique interests! Keep it up man! haha 👍\n\n`;
+      } else {
+        message += `BTW, saw that you're into ${interestsList.join(', ')}, wah super cool mix of interests man. Very well-rounded! Keep it up man! haha 👍\n\n`;
+      }
     }
+  } else {
+    message += `BTW, love your profile, keep it up! haha 👍\n\n`;
   }
   
-  message += `🔥 FREE TRAINING OFFER 🔥\n`;
-  message += `Looking for 5 people to join my training program!\n\n`;
+  message += `I am currently looking for 5 people can join my free training project trial!\n\n`;
   
-  message += `You'll get:\n`;
-  message += `✅ Custom Diet Plan\n`;
-  message += `✅ Personalized Workouts\n`;
-  message += `✅ 24/7 Support\n`;
-  message += `✅ Form Correction\n\n`;
+  message += `They get:\n`;
+  message += `✅ a Personalised Diet Plan\n`;
+  message += `✅ a Personalised Training Plan\n`;
+  message += `✅ Telegram Chat Support\n`;
+  message += `✅ Physical Form Correction\n`;
+  message += `✅ To improve Mind Muscle Connection\n`;
+  message += `✅ To make more progress with Less Time and Effort\n\n`;
   
-  message += `DM me "TRAIN" to claim your spot! Limited time offer! ⏰\n\n`;
+  message += `To push them in the right direction this year 💪🏻\n`;
+  message += `Do you know anyone who may be interested? : )\n\n`;
   
-  message += `#fitnessjourney #personaltrainer #${leadInfo.location?.toLowerCase() || 'singapore'} #transformation`;
+  message += `PS: How's your gym progress going? 🙂`;
   
-  // Adjust tone if needed
-  if (tone === 'casual') {
-    message = message.replace('Noticed you\'re into fitness!', 'Love your fitness content!');
-    message = message.replace('Looking for 5 people', 'Need 5 motivated people');
-  } else if (tone === 'singaporean') {
-    message = message.replace('Noticed you\'re into fitness!', 'Wah your fitness content damn power!');
-    message = message.replace('Looking for 5 people', 'Finding 5 people only');
-    message = message.replace('DM me "TRAIN" to claim your spot!', 'DM me "TRAIN" to chope your spot!');
+  // Adjust for Singaporean English if requested
+  if (tone === 'singaporean') {
+    message = message
+      .replace('I saw that you were following', 'I saw you following')
+      .replace('keep it up in the gym btw : )', 'keep it up in the gym ah! : )')
+      .replace('wah big respect to you bro', 'wah very power lah, respect sia')
+      .replace('wah super cool stuff man', 'wah very nice leh')
+      .replace('Keep it up man!', 'Keep it up lah!')
+      .replace('I am currently looking for', 'I currently looking for')
+      .replace('who may be interested? : )', 'who might want? Can intro or not? : )')
+      .replace('How\'s your gym progress going?', 'How\'s your gym progress going ah?')
+      .replace('Great for fitness and health!', 'Good for health one sia!')
+      .replace('Such a creative hobby!', 'So creative leh!')
+      .replace('Getting those gains!', 'Getting swole ah!')
+      .replace('Health is wealth!', 'Health is wealth sia!')
+      .replace('Good taste!', 'Good taste lah!')
+      .replace('Seeing the world!', 'See the world shiok ah!')
+      .replace('Tech savvy!', 'Tech savvy leh!')
+      .replace('Very unique interests!', 'Unique combo sia!')
+      .replace('Very well-rounded!', 'So many interests, power lah!');
   }
   
   return message;
