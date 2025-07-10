@@ -24,55 +24,72 @@ const BatchMessageGenerator: React.FC = () => {
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const MAX_PROFILES = 200; // Maximum number of profiles as per client requirements
 
-  // Parse the batch input into an array of leads - simplified version
+  // Parse the batch input into an array of leads
   const parseLeads = (input: string): Lead[] => {
     const lines = input.trim().split('\n');
     const leads: Lead[] = [];
     
-    // Process as name followed by interests with slash format
-    let i = 0;
-    while (i < lines.length) {
-      const currentLine = lines[i].trim();
-      
-      // Skip empty lines
-      if (!currentLine) {
-        i++;
-        continue;
-      }
-      
-      // This is a name line
-      const name = currentLine;
-      
-      // Check if the next line exists and contains interests
-      if (i + 1 < lines.length) {
-        const interestsLine = lines[i + 1].trim();
+    // Check if the input might be tab-separated
+    const tabSeparatedFormat = lines.some(line => line.includes('\t'));
+    
+    if (tabSeparatedFormat) {
+      // Process tab-separated format
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) continue; // Skip empty lines
         
-        if (interestsLine && name) {
-          leads.push({
-            name,
-            interests: interestsLine
-          });
+        const parts = trimmedLine.split('\t');
+        if (parts.length >= 2) {
+          const name = parts[0].trim();
+          const interests = parts[1].trim();
+          // Additional info is now incorporated into interests if present
+          const additionalInfo = parts[2]?.trim() || '';
           
-          // Move to the line after the interests
-          i += 2;
-          
-          // Skip any empty lines between entries
-          while (i < lines.length && !lines[i].trim()) {
-            i++;
+          if (name) {
+            leads.push({
+              name,
+              interests: additionalInfo ? `${interests} / ${additionalInfo}` : interests
+            });
           }
-        } else {
-          // If the next line is empty, just move to the next line
-          i++;
         }
-      } else {
-        // If there's no next line, just add the name
-        if (name) {
-          leads.push({
-            name,
-            interests: ''
-          });
+      }
+    } else {
+      // Process leads separated by empty lines
+      const blocks = input.split(/\n\s*\n/);
+      
+      for (const block of blocks) {
+        if (!block.trim()) continue;
+        
+        const blockLines = block.trim().split('\n');
+        if (blockLines.length >= 1) {
+          const name = blockLines[0].trim();
+          
+          // Handle different formats
+          if (blockLines.length >= 3) {
+            // Three-line format: name, interests, additional info
+            const interests = blockLines[1].trim();
+            const additionalInfo = blockLines[2].trim();
+            
+            if (name) {
+              leads.push({
+                name,
+                interests: additionalInfo ? `${interests} / ${additionalInfo}` : interests
+              });
+            }
+          } else if (blockLines.length >= 2) {
+            // Two-line format: name, interests
+            const interests = blockLines[1].trim();
+            
+            if (name) {
+              leads.push({ name, interests });
+            }
+          } else {
+            // Just name
+            if (name) {
+              leads.push({ name, interests: '' });
+            }
+          }
         }
-        i++;
       }
     }
     
@@ -144,7 +161,7 @@ const BatchMessageGenerator: React.FC = () => {
           });
           
           // Add a small delay to avoid overwhelming the system
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 500));
         } catch (err) {
           // Handle error for this specific message
           setBatchMessages(prev => {
@@ -199,16 +216,6 @@ const BatchMessageGenerator: React.FC = () => {
       });
   };
 
-  // View message in a new tab
-  const viewMessage = (message: string) => {
-    const newWindow = window.open();
-    if (newWindow) {
-      newWindow.document.write(`<pre>${message}</pre>`);
-    } else {
-      alert('Pop-up blocked. Please allow pop-ups to view the message.');
-    }
-  };
-
   // Calculate the number of leads from the current input
   const calculateLeadCount = (): number => {
     return parseLeads(batchInput).length;
@@ -241,13 +248,17 @@ const BatchMessageGenerator: React.FC = () => {
                     rows={10}
                     value={batchInput}
                     onChange={(e) => setBatchInput(e.target.value)}
-                    placeholder={`Name\nInterests / Additional Info\n\nExample:\nhenry tay\nworks at (ig/mindmusclesg) / traveling with fam\n\nbenjamin cerezo\nfitness / traveling`}
+                    placeholder={`Format 1 (tab-separated):\nDrake\tPhotography/Gaming\tbased on profile pic, likes to travel\nAlex Ng\tRunning Sports\tBased on profile pic, likes to do a marathon\n\nFormat 2 (three lines per lead):\nDrake\nPhotography/Gaming\nbased on profile pic, likes to travel\n\nAlex Ng\nRunning Sports\nBased on profile pic, likes to do a marathon`}
                     isInvalid={isOverLimit}
                   />
                   <Form.Text className={isOverLimit ? "text-danger" : "text-muted"}>
                     {isOverLimit ? 
                       `Too many profiles (${leadCount}). Maximum allowed is ${MAX_PROFILES} for quality purposes.` : 
-                      `Format: Name on first line, followed by interests/traits on second line separated by "/"\n\nExample:\nhenry tay\nworks at (ig/mindmusclesg) / traveling with fam`
+                      `Two formats accepted:
+                      1. Tab-separated format: Name[tab]Interests[tab]Additional Info
+                      2. Three lines per lead: Name, Interests, Additional Info (each on a separate line)
+                      
+                      Multiple interests can be separated with "/" (e.g., Photography/Gaming)`
                     }
                   </Form.Text>
                 </Form.Group>
@@ -376,7 +387,55 @@ const BatchMessageGenerator: React.FC = () => {
                       <Button
                         variant="link"
                         size="sm"
-                        onClick={() => viewMessage(item.message)}
+                        onClick={() => {
+                          const modal = document.createElement('div');
+                          modal.style.position = 'fixed';
+                          modal.style.top = '0';
+                          modal.style.left = '0';
+                          modal.style.width = '100%';
+                          modal.style.height = '100%';
+                          modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                          modal.style.display = 'flex';
+                          modal.style.alignItems = 'center';
+                          modal.style.justifyContent = 'center';
+                          modal.style.zIndex = '1000';
+                          
+                          const content = document.createElement('div');
+                          content.style.backgroundColor = 'white';
+                          content.style.padding = '20px';
+                          content.style.borderRadius = '5px';
+                          content.style.maxWidth = '80%';
+                          content.style.maxHeight = '80%';
+                          content.style.overflow = 'auto';
+                          
+                          const header = document.createElement('div');
+                          header.style.display = 'flex';
+                          header.style.justifyContent = 'space-between';
+                          header.style.marginBottom = '10px';
+                          
+                          const title = document.createElement('h4');
+                          title.textContent = `Message for ${item.lead.name}`;
+                          
+                          const closeBtn = document.createElement('button');
+                          closeBtn.textContent = '×';
+                          closeBtn.style.background = 'none';
+                          closeBtn.style.border = 'none';
+                          closeBtn.style.fontSize = '24px';
+                          closeBtn.style.cursor = 'pointer';
+                          closeBtn.onclick = () => document.body.removeChild(modal);
+                          
+                          const messageText = document.createElement('pre');
+                          messageText.style.whiteSpace = 'pre-wrap';
+                          messageText.style.wordBreak = 'break-word';
+                          messageText.textContent = item.message;
+                          
+                          header.appendChild(title);
+                          header.appendChild(closeBtn);
+                          content.appendChild(header);
+                          content.appendChild(messageText);
+                          modal.appendChild(content);
+                          document.body.appendChild(modal);
+                        }}
                         disabled={!item.isGenerated}
                       >
                         View
