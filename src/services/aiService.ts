@@ -173,61 +173,216 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
   
   // Add additional info if available
   if (additionalInfo && additionalInfo.trim()) {
-    // Better extraction of activities from additional info
+    // Extract meaningful information from the additional info
     let personalizedNote = "";
     
-    // Check for travel references
-    if (/likes? to travel|loves? to travel/i.test(additionalInfo)) {
+    // Normalize the additional info for easier pattern matching
+    const normalizedInfo = additionalInfo.toLowerCase().trim();
+    
+    // TRAVEL PATTERNS
+    if (/likes? to travel|loves? to travel|likes? traveling|loves? traveling|travel a lot|likes? adventure|loves? adventure|likes? to explore|loves? to explore|see the world|travel and|travel with|travel guide|travel around/i.test(normalizedInfo)) {
       personalizedNote = "I also noticed you enjoy traveling. That's awesome! ";
     }
-    // Check for eating out references
-    else if (/likes? to eat|loves? to eat|eat out/i.test(additionalInfo)) {
+    
+    // FOOD PATTERNS
+    else if (/likes? to eat|loves? to eat|eat out|food pics|food reviews|different foods|different cuisines|try.*food|food.*try|eat.*out|cuisine/i.test(normalizedInfo)) {
       personalizedNote = "I also noticed you enjoy trying different foods. That's awesome! ";
     }
-    // Check for sports fan references
-    else if (/fan of sports/i.test(additionalInfo)) {
+    
+    // SPORTS PATTERNS
+    else if (/fan of sports|sports fan|likes? sports|loves? sports/i.test(normalizedInfo)) {
       personalizedNote = "I also noticed you're a sports fan. That's awesome! ";
     }
-    // Check for adventure references
-    else if (/likes? an? adventure|loves? an? adventure/i.test(additionalInfo)) {
+    
+    // ADVENTURE PATTERNS
+    else if (/likes? an? adventure|loves? an? adventure|adventur(e|ous)|likes? adventure|loves? adventure/i.test(normalizedInfo)) {
       personalizedNote = "I also noticed you're adventurous. That's awesome! ";
     }
-    // Check for cycling references
-    else if (/cycling|cyclist/i.test(additionalInfo)) {
+    
+    // CYCLING PATTERNS
+    else if (/cycling|cyclist|cycle|likes? to cycle|loves? to cycle/i.test(normalizedInfo)) {
       personalizedNote = "I also noticed you're into cycling. That's awesome! ";
     }
-    // Check for martial arts references
-    else if (/taekwondo|karate|judo|martial arts/i.test(additionalInfo)) {
+    
+    // MARTIAL ARTS PATTERNS
+    else if (/taekwondo|karate|judo|martial arts/i.test(normalizedInfo)) {
       personalizedNote = "I also noticed your martial arts background. That's awesome! ";
     }
-    // Check for marathon references
-    else if (/marathon|likes? to (do|run) a marathon/i.test(additionalInfo)) {
+    
+    // MARATHON PATTERNS
+    else if (/marathon|likes? to (do|run|join) a marathon/i.test(normalizedInfo)) {
       personalizedNote = "I also noticed you're into marathons. That's impressive endurance! ";
     }
-    // Check for family/kids references
-    else if (/kid|child|baby|family|parent/i.test(additionalInfo)) {
-      if (/3rd|third|3/i.test(additionalInfo) && /kid|child|baby/i.test(additionalInfo)) {
+    
+    // FAMILY/KIDS PATTERNS
+    else if (/kid|child|baby|family|parent|daughter|son/i.test(normalizedInfo)) {
+      if (/3rd|third|3/i.test(normalizedInfo) && /kid|child|baby/i.test(normalizedInfo)) {
         personalizedNote = "Congrats on your third child! Family fitness is important too. ";
-      } else if (/2nd|second|2/i.test(additionalInfo) && /kid|child|baby/i.test(additionalInfo)) {
+      } else if (/2nd|second|2/i.test(normalizedInfo) && /kid|child|baby/i.test(normalizedInfo)) {
         personalizedNote = "Congrats on your second child! Family fitness is important too. ";
-      } else if (/1st|first|1/i.test(additionalInfo) && /kid|child|baby/i.test(additionalInfo)) {
+      } else if (/1st|first|1/i.test(normalizedInfo) && /kid|child|baby/i.test(normalizedInfo)) {
         personalizedNote = "Congrats on your child! Family fitness is important too. ";
-      } else if (/kid|child|baby/i.test(additionalInfo)) {
+      } else if (/kid|child|baby/i.test(normalizedInfo)) {
         personalizedNote = "I see you have kids! Family fitness is important too. ";
+      } else if (/daughter/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you spend time with your daughter. Family fitness is important too. ";
+      } else if (/son/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you spend time with your son. Family fitness is important too. ";
       }
     }
-    // Check for military/infantry references
-    else if (/infantry|military|army|navy|air force|marine|SIR/i.test(additionalInfo)) {
+    
+    // MILITARY/INFANTRY PATTERNS
+    else if (/infantry|military|army|navy|air force|marine|SIR|mariner/i.test(normalizedInfo)) {
       personalizedNote = "I noticed your military background. Respect for your service! ";
     }
-    // Check for student references
-    else if (/student|study|college|university|school/i.test(additionalInfo)) {
-      personalizedNote = "I noticed you're a student. Great to balance studies with fitness! ";
+    
+    // STUDENT/EDUCATION PATTERNS
+    else if (/student|study|college|university|school|graduated|graduation|professor|teach/i.test(normalizedInfo)) {
+      if (/professor|teach/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you're a professor. Great to balance teaching with fitness! ";
+      } else if (/graduated|graduation/i.test(normalizedInfo)) {
+        personalizedNote = "Congrats on your graduation! A perfect time to focus on fitness too. ";
+      } else {
+        personalizedNote = "I noticed you're a student. Great to balance studies with fitness! ";
+      }
     }
+    
+    // RELATIONSHIP PATTERNS
+    else if (/girlfriend|gf|wife|engaged|married|husband|boyfriend|bf|relationship|partner/i.test(normalizedInfo)) {
+      if (/engaged/i.test(normalizedInfo)) {
+        personalizedNote = "Congrats on your engagement! Fitness journey is always better with a partner. ";
+      } else if (/married/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you're married. Fitness journey is always better with a partner. ";
+      } else if (/girlfriend|gf/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you have a girlfriend. Fitness journey is always better with a partner. ";
+      } else if (/boyfriend|bf/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you have a boyfriend. Fitness journey is always better with a partner. ";
+      } else if (/wife/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you have a wife. Fitness journey is always better with a partner. ";
+      } else if (/husband/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you have a husband. Fitness journey is always better with a partner. ";
+      }
+    }
+    
+    // PHOTOGRAPHY PATTERNS
+    else if (/photography|photos|pictures|pics|selfies|scenery|take.*photos|take.*pictures|take.*pics/i.test(normalizedInfo)) {
+      if (/selfies/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you enjoy taking selfies. Looking good in photos is great fitness motivation! ";
+      } else if (/scenery/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you enjoy photography, especially scenery. That's awesome! ";
+      } else {
+        personalizedNote = "I noticed you're into photography. That's awesome! ";
+      }
+    }
+    
+    // WORKOUT/FITNESS PATTERNS
+    else if (/work out|workout|gym|fitness|exercise|lift.*weight|weight.*lift|powerlift|fitness challenge|swole|gains/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you're already into fitness. That's awesome! Let's take it to the next level. ";
+    }
+    
+    // YOGA PATTERNS
+    else if (/yoga|aerial yoga|teaches yoga/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you're into yoga. Great for flexibility and mindfulness! ";
+    }
+    
+    // VEHICLE PATTERNS
+    else if (/motorcycle|bike|car|cars|motor|vehicle/i.test(normalizedInfo)) {
+      if (/motorcycle|motor/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you're into motorcycles. That's cool! Good fitness helps with riding too. ";
+      } else if (/car|cars/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you're into cars. That's cool! ";
+      }
+    }
+    
+    // WATER ACTIVITIES
+    else if (/kayak|water activity|water sport|boat|marine|explore on water/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you enjoy water activities. That's awesome for fitness! ";
+    }
+    
+    // PET PATTERNS
+    else if (/dog|cat|pet|bulldog|animal/i.test(normalizedInfo)) {
+      if (/dog|bulldog/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you have a dog. Walking your dog is great exercise too! ";
+      } else if (/cat|cats/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you love cats. Pets are great for mental wellbeing too! ";
+      } else {
+        personalizedNote = "I noticed you have pets. They're great for mental wellbeing! ";
+      }
+    }
+    
+    // BUSINESS/WORK PATTERNS
+    else if (/business|work|job|career|financial|consultant|renovate/i.test(normalizedInfo)) {
+      if (/business/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you have your own business. Staying fit helps with productivity too! ";
+      } else if (/financial|consultant/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you work in finance. Staying fit helps with productivity too! ";
+      } else if (/renovate/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you work on renovations. That's physical work already! ";
+      }
+    }
+    
+    // ROCK CLIMBING
+    else if (/rock climbing|climbing/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you're into rock climbing. That's amazing for strength and focus! ";
+    }
+    
+    // HEALTH/WELLNESS
+    else if (/health|wellness|diet|healthy food|health enthusiast|strained muscles|helps.*muscles/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you're already health-conscious. That's awesome! ";
+    }
+    
+    // HOBBIES/INTERESTS
+    else if (/football|soccer|movie|movies|bollywood|indian movies|gaming|game|COC|cap|caps|collect/i.test(normalizedInfo)) {
+      if (/football|soccer/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you're into football. Great sport for fitness! ";
+      } else if (/movie|movies|bollywood|indian/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you enjoy movies. Everyone needs some downtime! ";
+      } else if (/gaming|game|COC/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you're into gaming. Balance with fitness is key! ";
+      } else if (/cap|caps|collect/i.test(normalizedInfo)) {
+        personalizedNote = "I noticed you collect caps. Cool hobby! ";
+      }
+    }
+    
+    // JUDGING/COMPETITION
+    else if (/judge|championship|contest|competition/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed your involvement in competitions. That's impressive! ";
+    }
+    
+    // SOCIAL PATTERNS
+    else if (/friends|hang out|go out|social|party|goof/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you enjoy socializing. Fitness is more fun with friends too! ";
+    }
+    
+    // DANCING
+    else if (/danc|dancing/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you enjoy dancing. Great way to stay fit while having fun! ";
+    }
+    
+    // MODELING
+    else if (/model|dress up/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you're into modeling. Fitness definitely complements that! ";
+    }
+    
+    // HIKING
+    else if (/hik|hiking/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you enjoy hiking. Great for both fitness and experiencing nature! ";
+    }
+    
+    // COUNSELING/HELPING OTHERS
+    else if (/counsel|help.*others/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you might be a counselor. Helping others while taking care of yourself is important! ";
+    }
+    
+    // WEIGHT LOSS GOALS
+    else if (/lose weight|weight loss/i.test(normalizedInfo)) {
+      personalizedNote = "I noticed you're on a weight loss journey. That's awesome commitment! ";
+    }
+    
     // General catch-all for other activities
     else {
       // Try to extract activities from "likes to" or "loves to" phrases
-      const likesToMatch = additionalInfo.match(/(?:likes|loves) to\s+([a-zA-Z]+)/i);
+      const likesToMatch = normalizedInfo.match(/(?:likes|loves) to\s+([a-zA-Z]+)/i);
       if (likesToMatch && likesToMatch[1]) {
         const activity = likesToMatch[1].toLowerCase();
         // Add "ing" to verbs that don't already end in "ing"
@@ -235,7 +390,7 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
         personalizedNote = `I also noticed you enjoy ${activityWithIng}. That's awesome! `;
       }
       // If nothing specific was found but there's a profile pic mention
-      else if (/profile pic|based on/i.test(additionalInfo) && !personalizedNote) {
+      else if (/profile pic|based on|pfp/i.test(normalizedInfo) && !personalizedNote) {
         // Don't add any note if we can't extract meaningful info
       }
     }
@@ -291,7 +446,20 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
       .replace('Family fitness is important too.', 'Family fitness also important one lah.')
       .replace('Congrats', 'Wah congrats')
       .replace('Respect for your service!', 'Respect for your service sia!')
-      .replace('Great to balance studies with fitness!', 'Good to balance studies with fitness lah!');
+      .replace('Great to balance studies with fitness!', 'Good to balance studies with fitness lah!')
+      .replace('Great to balance teaching with fitness!', 'Good to balance teaching with fitness lah!')
+      .replace('Fitness journey is always better with a partner.', 'Fitness journey always better with partner one lah.')
+      .replace('Looking good in photos is great fitness motivation!', 'Look good in photos is good motivation sia!')
+      .replace('Great for flexibility and mindfulness!', 'Good for flexibility and mindfulness lah!')
+      .replace('That\'s cool!', 'That\'s cool sia!')
+      .replace('That\'s amazing for strength and focus!', 'That one damn good for strength and focus sia!')
+      .replace('Great sport for fitness!', 'Good sport for fitness lah!')
+      .replace('Balance with fitness is key!', 'Must balance with fitness one!')
+      .replace('Fitness is more fun with friends too!', 'Fitness more fun with friends lah!')
+      .replace('Great way to stay fit while having fun!', 'Good way to stay fit while having fun sia!')
+      .replace('Fitness definitely complements that!', 'Fitness confirm plus chop complement that one!')
+      .replace('Great for both fitness and experiencing nature!', 'Good for fitness and see nature lah!')
+      .replace('That\'s awesome commitment!', 'That\'s power commitment sia!');
   }
   
   return message;
