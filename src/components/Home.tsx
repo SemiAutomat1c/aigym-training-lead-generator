@@ -26,14 +26,14 @@ const Home: React.FC = () => {
           Create personalized, engaging messages for gym training leads using advanced AI technology.
           Save time and increase your conversion rates with tailored communication for fitness enthusiasts.
         </p>
-        <div className="d-flex justify-content-center gap-3">
+        <div className="d-flex justify-content-center gap-3 flex-wrap">
           <LinkButton 
-            to="/generate" 
-            variant="primary" 
-            size="lg" 
-            className="px-5 py-3"
-          >
-            Start Generating Messages
+          to="/generate" 
+          variant="primary" 
+          size="lg" 
+          className="px-5 py-3"
+        >
+          Start Generating Messages
           </LinkButton>
           <LinkButton 
             to="/batch" 
@@ -42,6 +42,14 @@ const Home: React.FC = () => {
             className="px-5 py-3"
           >
             Batch Message Generator <Badge bg="danger">NEW!</Badge>
+          </LinkButton>
+          <LinkButton 
+            to="/formatter" 
+            variant="outline-secondary" 
+            size="lg" 
+            className="px-5 py-3"
+          >
+            Lead Data Formatter <Badge bg="danger">NEW!</Badge>
           </LinkButton>
         </div>
       </div>
@@ -98,6 +106,7 @@ const Home: React.FC = () => {
                 <li><strong>Personalized messaging</strong> - Unique variations for each interest type</li>
                 <li><strong>Multiple platforms</strong> - Instagram and TikTok templates</li>
                 <li><strong>Perfect template matching</strong> - Follows the exact required format</li>
+                <li><strong>Lead data formatter</strong> - Clean and format your lead data</li>
               </ul>
             </Card.Body>
           </Card>
@@ -113,6 +122,7 @@ const Home: React.FC = () => {
                 <li>Scale your gym training client acquisition efficiently</li>
                 <li>Maintain message quality even with high volume</li>
                 <li>Easy export options for all your generated messages</li>
+                <li>Format and clean lead data for better organization</li>
               </ul>
             </Card.Body>
           </Card>
@@ -125,12 +135,12 @@ const Home: React.FC = () => {
           Start creating personalized messages that convert fitness enthusiasts into clients.
           Process up to 200 leads at once with our new batch generator!
         </p>
-        <div className="d-flex justify-content-center gap-3">
+        <div className="d-flex justify-content-center gap-3 flex-wrap">
           <LinkButton 
-            to="/generate" 
-            variant="primary" 
-            size="lg"
-          >
+          to="/generate" 
+          variant="primary" 
+          size="lg"
+        >
             Single Message
           </LinkButton>
           <LinkButton 
@@ -138,7 +148,14 @@ const Home: React.FC = () => {
             variant="success" 
             size="lg"
           >
-            Batch Generator <Badge bg="danger">NEW!</Badge>
+            Batch Generator
+          </LinkButton>
+          <LinkButton 
+            to="/formatter" 
+            variant="info" 
+            size="lg"
+          >
+            Lead Formatter
           </LinkButton>
         </div>
       </div>

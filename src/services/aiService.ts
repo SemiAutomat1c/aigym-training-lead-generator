@@ -72,14 +72,15 @@ export const generateMessage = async (request: MessageRequest): Promise<string> 
 
 // Special function for gym training template
 const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
-  const { name, interests } = leadInfo;
+  const { name, interests, additionalInfo } = leadInfo;
   
   // Use the exact template provided by the client
   let message = `Hey ${name}, I saw that you were following a couple gym accounts, keep it up in the gym btw : )  \n`;
   
   if (interests && interests.trim()) {
     // Handle interests more intelligently for better grammar
-    const interestsList = interests.split(',').map(i => i.trim());
+    // Split by "/" to handle multiple interests
+    const interestsList = interests.split('/').map(i => i.trim());
     
     if (interestsList.length === 1) {
       // Single interest
@@ -135,6 +136,10 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
           message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Seeing the world! Keep it up man! haha 👍\n\n`;
         } else if (/tech|gadget|gaming|computer/i.test(interest)) {
           message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Tech savvy! Keep it up man! haha 👍\n\n`;
+        } else if (/photo|camera|photography/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Great eye for visuals! Keep it up man! haha 👍\n\n`;
+        } else if (/sport|athlete|run|marathon/i.test(interest)) {
+          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. So athletic! Keep it up man! haha 👍\n\n`;
         } else {
           message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
         }
@@ -145,13 +150,100 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
       const secondaryInterest = interestsList[1]?.toLowerCase();
       
       if (interestsList.length === 2) {
-        message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Very unique interests! Keep it up man! haha 👍\n\n`;
+        // Create variations based on interest combinations
+        if ((/photo|camera/i.test(primaryInterest) && /travel/i.test(secondaryInterest)) || 
+            (/travel/i.test(primaryInterest) && /photo|camera/i.test(secondaryInterest))) {
+          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Must take amazing travel photos! Keep it up man! haha 👍\n\n`;
+        } else if ((/sport|run|marathon/i.test(primaryInterest) && /fitness|gym/i.test(secondaryInterest)) || 
+                  (/fitness|gym/i.test(primaryInterest) && /sport|run|marathon/i.test(secondaryInterest))) {
+          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Really taking care of your fitness! Keep it up man! haha 👍\n\n`;
+        } else if ((/photo|camera/i.test(primaryInterest) && /gaming/i.test(secondaryInterest)) || 
+                  (/gaming/i.test(primaryInterest) && /photo|camera/i.test(secondaryInterest))) {
+          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Creative and tech-savvy! Keep it up man! haha 👍\n\n`;
+        } else {
+          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Very unique interests! Keep it up man! haha 👍\n\n`;
+        }
       } else {
-        message += `BTW, saw that you're into ${interestsList.join(', ')}, wah super cool mix of interests man. Very well-rounded! Keep it up man! haha 👍\n\n`;
+        message += `BTW, saw that you're into ${interestsList.join(' and ')}, wah super cool mix of interests man. Very well-rounded! Keep it up man! haha 👍\n\n`;
       }
     }
   } else {
     message += `BTW, love your profile, keep it up! haha 👍\n\n`;
+  }
+  
+  // Add additional info if available
+  if (additionalInfo && additionalInfo.trim()) {
+    // Better extraction of activities from additional info
+    let personalizedNote = "";
+    
+    // Check for travel references
+    if (/likes? to travel|loves? to travel/i.test(additionalInfo)) {
+      personalizedNote = "I also noticed you enjoy traveling. That's awesome! ";
+    }
+    // Check for eating out references
+    else if (/likes? to eat|loves? to eat|eat out/i.test(additionalInfo)) {
+      personalizedNote = "I also noticed you enjoy trying different foods. That's awesome! ";
+    }
+    // Check for sports fan references
+    else if (/fan of sports/i.test(additionalInfo)) {
+      personalizedNote = "I also noticed you're a sports fan. That's awesome! ";
+    }
+    // Check for adventure references
+    else if (/likes? an? adventure|loves? an? adventure/i.test(additionalInfo)) {
+      personalizedNote = "I also noticed you're adventurous. That's awesome! ";
+    }
+    // Check for cycling references
+    else if (/cycling|cyclist/i.test(additionalInfo)) {
+      personalizedNote = "I also noticed you're into cycling. That's awesome! ";
+    }
+    // Check for martial arts references
+    else if (/taekwondo|karate|judo|martial arts/i.test(additionalInfo)) {
+      personalizedNote = "I also noticed your martial arts background. That's awesome! ";
+    }
+    // Check for marathon references
+    else if (/marathon|likes? to (do|run) a marathon/i.test(additionalInfo)) {
+      personalizedNote = "I also noticed you're into marathons. That's impressive endurance! ";
+    }
+    // Check for family/kids references
+    else if (/kid|child|baby|family|parent/i.test(additionalInfo)) {
+      if (/3rd|third|3/i.test(additionalInfo) && /kid|child|baby/i.test(additionalInfo)) {
+        personalizedNote = "Congrats on your third child! Family fitness is important too. ";
+      } else if (/2nd|second|2/i.test(additionalInfo) && /kid|child|baby/i.test(additionalInfo)) {
+        personalizedNote = "Congrats on your second child! Family fitness is important too. ";
+      } else if (/1st|first|1/i.test(additionalInfo) && /kid|child|baby/i.test(additionalInfo)) {
+        personalizedNote = "Congrats on your child! Family fitness is important too. ";
+      } else if (/kid|child|baby/i.test(additionalInfo)) {
+        personalizedNote = "I see you have kids! Family fitness is important too. ";
+      }
+    }
+    // Check for military/infantry references
+    else if (/infantry|military|army|navy|air force|marine|SIR/i.test(additionalInfo)) {
+      personalizedNote = "I noticed your military background. Respect for your service! ";
+    }
+    // Check for student references
+    else if (/student|study|college|university|school/i.test(additionalInfo)) {
+      personalizedNote = "I noticed you're a student. Great to balance studies with fitness! ";
+    }
+    // General catch-all for other activities
+    else {
+      // Try to extract activities from "likes to" or "loves to" phrases
+      const likesToMatch = additionalInfo.match(/(?:likes|loves) to\s+([a-zA-Z]+)/i);
+      if (likesToMatch && likesToMatch[1]) {
+        const activity = likesToMatch[1].toLowerCase();
+        // Add "ing" to verbs that don't already end in "ing"
+        const activityWithIng = activity.endsWith('ing') ? activity : `${activity}ing`;
+        personalizedNote = `I also noticed you enjoy ${activityWithIng}. That's awesome! `;
+      }
+      // If nothing specific was found but there's a profile pic mention
+      else if (/profile pic|based on/i.test(additionalInfo) && !personalizedNote) {
+        // Don't add any note if we can't extract meaningful info
+      }
+    }
+    
+    // Add the personalized note if we found something
+    if (personalizedNote) {
+      message += personalizedNote + "\n\n";
+    }
   }
   
   message += `I am currently looking for 5 people can join my free training project trial!\n\n`;
@@ -188,7 +280,18 @@ const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
       .replace('Seeing the world!', 'See the world shiok ah!')
       .replace('Tech savvy!', 'Tech savvy leh!')
       .replace('Very unique interests!', 'Unique combo sia!')
-      .replace('Very well-rounded!', 'So many interests, power lah!');
+      .replace('Very well-rounded!', 'So many interests, power lah!')
+      .replace('Great eye for visuals!', 'Your photos must be shiok ah!')
+      .replace('So athletic!', 'So fit one sia!')
+      .replace('Must take amazing travel photos!', 'Your travel photos confirm plus chop very nice one!')
+      .replace('Really taking care of your fitness!', 'You damn fit lah!')
+      .replace('Creative and tech-savvy!', 'Creative and tech-savvy sia, power lah!')
+      .replace('That\'s awesome!', 'That\'s damn shiok sia!')
+      .replace('That\'s impressive endurance!', 'Wah your stamina power sia!')
+      .replace('Family fitness is important too.', 'Family fitness also important one lah.')
+      .replace('Congrats', 'Wah congrats')
+      .replace('Respect for your service!', 'Respect for your service sia!')
+      .replace('Great to balance studies with fitness!', 'Good to balance studies with fitness lah!');
   }
   
   return message;
@@ -203,7 +306,7 @@ const getTikTokGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string =
   
   if (interests && interests.trim()) {
     // Handle interests more intelligently for better grammar
-    const interestsList = interests.split(',').map(i => i.trim());
+    const interestsList = interests.split('/').map(i => i.trim());
     
     if (interestsList.length === 1) {
       // Single interest

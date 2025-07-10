@@ -5,7 +5,7 @@ import { generateMessage } from '../services/aiService';
 interface Lead {
   name: string;
   interests: string;
-  location: string;
+  additionalInfo: string;
 }
 
 interface BatchMessage {
@@ -31,36 +31,44 @@ const BatchMessageGenerator: React.FC = () => {
     const lines = input.trim().split('\n');
     const leads: Lead[] = [];
     
-    // Check if the input is in the numbered format (e.g., "1. Ryan - musician, Singapore")
-    const numberedFormatRegex = /^\d+\.\s+(.+?)\s+-\s+(.+?),\s+(.+)$/;
-    const isNumberedFormat = lines.some(line => numberedFormatRegex.test(line.trim()));
+    // Check if the input might be tab-separated
+    const tabSeparatedFormat = lines.some(line => line.includes('\t'));
     
-    if (isNumberedFormat) {
-      // Process numbered format
+    if (tabSeparatedFormat) {
+      // Process tab-separated format
       for (const line of lines) {
         const trimmedLine = line.trim();
         if (!trimmedLine) continue; // Skip empty lines
         
-        const match = trimmedLine.match(numberedFormatRegex);
-        if (match) {
-          const [, name, interests, location] = match;
-          leads.push({
-            name: name.trim(),
-            interests: interests.trim(),
-            location: location.trim() || 'Singapore'
-          });
+        const parts = trimmedLine.split('\t');
+        if (parts.length >= 2) {
+          const name = parts[0].trim();
+          const interests = parts[1].trim();
+          // For the third column, preserve it as additional info
+          const additionalInfo = parts[2]?.trim() || '';
+          
+          if (name) {
+            leads.push({
+              name,
+              interests,
+              additionalInfo
+            });
+          }
         }
       }
     } else {
-      // Process original format (3 lines per lead)
-      for (let i = 0; i < lines.length; i += 3) {
-        if (i + 2 < lines.length) {
-          const name = lines[i].trim();
-          const interests = lines[i + 1].trim();
-          const location = lines[i + 2].trim() || 'Singapore';
+      // Process three lines per lead format
+      // Skip empty lines first
+      const nonEmptyLines = lines.filter(line => line.trim() !== '');
+      
+      for (let i = 0; i < nonEmptyLines.length; i += 3) {
+        if (i + 2 < nonEmptyLines.length) {
+          const name = nonEmptyLines[i].trim();
+          const interests = nonEmptyLines[i + 1].trim();
+          const additionalInfo = nonEmptyLines[i + 2].trim();
           
           if (name) {
-            leads.push({ name, interests, location });
+            leads.push({ name, interests, additionalInfo });
           }
         }
       }
@@ -113,9 +121,9 @@ const BatchMessageGenerator: React.FC = () => {
               industry: '',
               position: '',
               painPoints: '',
-              additionalInfo: '',
+              additionalInfo: lead.additionalInfo || '',
               interests: lead.interests,
-              location: lead.location
+              location: 'Singapore' // Default location
             },
             messageType,
             tone,
@@ -221,15 +229,17 @@ const BatchMessageGenerator: React.FC = () => {
                     rows={10}
                     value={batchInput}
                     onChange={(e) => setBatchInput(e.target.value)}
-                    placeholder={`Format 1 (numbered):\n1. Ryan - musician, Singapore\n2. Mei Lin - chef, Singapore\n3. Rajesh - software engineer, Singapore\n\nFormat 2 (line by line):\nJohn Smith\nmusician, fitness enthusiast\nSingapore\n\nJane Doe\nphotographer, foodie\nSingapore`}
+                    placeholder={`Format 1 (tab-separated):\nDrake\tPhotography/Gaming\tbased on profile pic, likes to travel\nAlex Ng\tRunning Sports\tBased on profile pic, likes to do a marathon\n\nFormat 2 (three lines per lead):\nDrake\nPhotography/Gaming\nbased on profile pic, likes to travel\n\nAlex Ng\nRunning Sports\nBased on profile pic, likes to do a marathon`}
                     isInvalid={isOverLimit}
                   />
                   <Form.Text className={isOverLimit ? "text-danger" : "text-muted"}>
                     {isOverLimit ? 
                       `Too many profiles (${leadCount}). Maximum allowed is ${MAX_PROFILES} for quality purposes.` : 
                       `Two formats accepted:
-                      1. Numbered format: "1. Name - interests, location"
-                      2. Line by line format: Name, Interests, Location (each on a separate line)`
+                      1. Tab-separated format: Name[tab]Interests[tab]Additional Info
+                      2. Three lines per lead: Name, Interests, Additional Info (each on a separate line)
+                      
+                      Multiple interests can be separated with "/" (e.g., Photography/Gaming)`
                     }
                   </Form.Text>
                 </Form.Group>
@@ -339,6 +349,7 @@ const BatchMessageGenerator: React.FC = () => {
                   <th>#</th>
                   <th>Name</th>
                   <th>Interests</th>
+                  <th>Additional Info</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -349,6 +360,7 @@ const BatchMessageGenerator: React.FC = () => {
                     <td>{index + 1}</td>
                     <td>{item.lead.name}</td>
                     <td>{item.lead.interests}</td>
+                    <td>{item.lead.additionalInfo}</td>
                     <td>
                       {item.isError ? (
                         <span className="text-danger">Error</span>

@@ -54,6 +54,12 @@ const Header: React.FC = () => {
               Batch Generator
             </NavLinkRouter>
             <NavLinkRouter 
+              to="/formatter" 
+              active={location.pathname === '/formatter'}
+            >
+              Lead Formatter
+            </NavLinkRouter>
+            <NavLinkRouter 
               to="/about" 
               active={location.pathname === '/about'}
             >
