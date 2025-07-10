@@ -2,13 +2,13 @@ import axios from 'axios';
 
 interface LeadInfo {
   name: string;
-  company: string;
-  industry: string;
-  position: string;
-  painPoints: string;
-  additionalInfo: string;
-  interests?: string; // Added for gym template
-  location?: string; // Added for location targeting
+  interests?: string;
+  company?: string;
+  industry?: string;
+  position?: string;
+  painPoints?: string;
+  additionalInfo?: string;
+  location?: string;
 }
 
 interface MessageRequest {
@@ -18,539 +18,43 @@ interface MessageRequest {
   template: string;
 }
 
-// This is a mock implementation for demo purposes
-// In a real application, you would make an API call to your backend or directly to an AI service
 export const generateMessage = async (request: MessageRequest): Promise<string> => {
-  // For demo purposes, we'll simulate an API call with a timeout
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const { leadInfo, messageType, tone, template } = request;
+  const { leadInfo, tone, template } = request;
+  let message = '';
       
-      // Generate a personalized message based on the input
-      let message = '';
-      
-      // Special case for gym training templates
-      if (template === 'Gym Training Offer') {
-        message = getGymTrainingMessage(leadInfo, tone);
-        resolve(message);
-        return;
-      } else if (template === 'TikTok Gym Training Offer') {
-        message = getTikTokGymTrainingMessage(leadInfo, tone);
-        resolve(message);
-        return;
-      }
-      
-      // Add appropriate greeting based on message type
-      if (messageType === 'email') {
-        message += `Subject: ${getSubjectLine(leadInfo, template)}\n\n`;
-        message += `Dear ${leadInfo.name},\n\n`;
-      } else if (messageType === 'linkedin') {
-        message += `Hi ${leadInfo.name},\n\n`;
-      } else if (messageType === 'instagram') {
-        message += `Hey ${leadInfo.name}, `;
-      } else if (messageType === 'tiktok') {
-        message += `@${leadInfo.name} `;
-      }
-      
-      // Add personalized content based on template
-      message += getTemplateContent(leadInfo, tone, template);
-      
-      // Add appropriate closing
-      message += '\n\n';
-      if (tone === 'formal') {
-        message += 'Sincerely,\n[Your Name]\n[Your Position]\n[Your Company]';
-      } else if (tone === 'professional') {
-        message += 'Best regards,\n[Your Name]\n[Your Position]\n[Your Company]';
-      } else {
-        message += 'Thanks,\n[Your Name]\n[Your Company]';
-      }
-      
-      resolve(message);
-    }, 1500); // Simulate API delay
-  });
-};
+  if (template === 'company') {
+    message = getCompanyMessage(leadInfo, tone);
+  } else if (template === 'followup') {
+    message = getFollowUpMessage(leadInfo, tone);
+  }
 
-// Special function for gym training template
-const getGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
-  const { name, interests, additionalInfo } = leadInfo;
-  
-  // Use the exact template provided by the client
-  let message = `Hey ${name}, I saw that you were following a couple gym accounts, keep it up in the gym btw : )  \n`;
-  
-  if (interests && interests.trim()) {
-    // Handle interests more intelligently for better grammar
-    // Split by "/" to handle multiple interests
-    const interestsList = interests.split('/').map(i => i.trim());
-    
-    if (interestsList.length === 1) {
-      // Single interest
-      const interest = interestsList[0].toLowerCase();
-      
-      // Function to determine if a word should use "an" instead of "a"
-      const shouldUseAn = (word: string): boolean => {
-        // Words starting with vowel sounds use "an"
-        return /^[aeiou]/i.test(word) || 
-               // Special cases like "hour" that start with silent 'h'
-               /^hour/i.test(word) || 
-               /^honest/i.test(word);
-      };
-      
-      // Generate personalized message based on interest type
-      // This ensures each message is uniquely handcrafted for the recipient
-      if (/er$|or$|ist$|ian$|eur$|ant$|ent$|ive$/.test(interest)) {
-        // Profession/role like "developer", "musician", "entrepreneur"
-        const article = shouldUseAn(interest) ? "an" : "a";
-        
-        // Create variations for different professions to make each message unique
-        if (/music|sing|guitar|piano|band|dj/i.test(interest)) {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Your creative talent must be amazing! Keep it up! haha 👍\n\n`;
-        } else if (/develop|program|code|tech|engineer|software/i.test(interest)) {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Tech skills very impressive! Keep it up! haha 👍\n\n`;
-        } else if (/teach|educat|professor|tutor|instructor/i.test(interest)) {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Shaping future generations! Keep it up! haha 👍\n\n`;
-        } else {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
-        }
-      } else if (/ing$/.test(interest)) {
-        // Activity ending in -ing like "swimming", "coding"
-        
-        // Create variations for different activities to make each message unique
-        if (/swim|run|jog|cycle|hik/i.test(interest)) {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Great for fitness and health! Keep it up man! haha 👍\n\n`;
-        } else if (/cook|bak|craft|paint|draw/i.test(interest)) {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Such a creative hobby! Keep it up man! haha 👍\n\n`;
-        } else if (/lift|gym|train|workout/i.test(interest)) {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Getting those gains! Keep it up man! haha 👍\n\n`;
-        } else {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
-        }
-      } else {
-        // Regular interest/activity
-        
-        // Create variations for different interests to make each message unique
-        if (/fitness|gym|workout|health|exercise/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Health is wealth! Keep it up man! haha 👍\n\n`;
-        } else if (/food|cuisine|cooking|baking/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Good taste! Keep it up man! haha 👍\n\n`;
-        } else if (/travel|adventure|explore/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Seeing the world! Keep it up man! haha 👍\n\n`;
-        } else if (/tech|gadget|gaming|computer/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Tech savvy! Keep it up man! haha 👍\n\n`;
-        } else if (/photo|camera|photography/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Great eye for visuals! Keep it up man! haha 👍\n\n`;
-        } else if (/sport|athlete|run|marathon/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. So athletic! Keep it up man! haha 👍\n\n`;
-        } else {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
-        }
-      }
-    } else {
-      // Multiple interests - create a personalized message that references multiple interests
-      const primaryInterest = interestsList[0].toLowerCase();
-      const secondaryInterest = interestsList[1]?.toLowerCase();
-      
-      if (interestsList.length === 2) {
-        // Create variations based on interest combinations
-        if ((/photo|camera/i.test(primaryInterest) && /travel/i.test(secondaryInterest)) || 
-            (/travel/i.test(primaryInterest) && /photo|camera/i.test(secondaryInterest))) {
-          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Must take amazing travel photos! Keep it up man! haha 👍\n\n`;
-        } else if ((/sport|run|marathon/i.test(primaryInterest) && /fitness|gym/i.test(secondaryInterest)) || 
-                  (/fitness|gym/i.test(primaryInterest) && /sport|run|marathon/i.test(secondaryInterest))) {
-          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Really taking care of your fitness! Keep it up man! haha 👍\n\n`;
-        } else if ((/photo|camera/i.test(primaryInterest) && /gaming/i.test(secondaryInterest)) || 
-                  (/gaming/i.test(primaryInterest) && /photo|camera/i.test(secondaryInterest))) {
-          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Creative and tech-savvy! Keep it up man! haha 👍\n\n`;
-        } else {
-          message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Very unique interests! Keep it up man! haha 👍\n\n`;
-        }
-      } else {
-        message += `BTW, saw that you're into ${interestsList.join(' and ')}, wah super cool mix of interests man. Very well-rounded! Keep it up man! haha 👍\n\n`;
-      }
-    }
-  } else {
-    message += `BTW, love your profile, keep it up! haha 👍\n\n`;
-  }
-  
-  // Add additional info if available
-  if (additionalInfo && additionalInfo.trim()) {
-    // Extract meaningful information from the additional info
-    let personalizedNote = "";
-    
-    // Normalize the additional info for easier pattern matching
-    const normalizedInfo = additionalInfo.toLowerCase().trim();
-    
-    // TRAVEL PATTERNS
-    if (/likes? to travel|loves? to travel|likes? traveling|loves? traveling|travel a lot|likes? adventure|loves? adventure|likes? to explore|loves? to explore|see the world|travel and|travel with|travel guide|travel around/i.test(normalizedInfo)) {
-      personalizedNote = "I also noticed you enjoy traveling. That's awesome! ";
-    }
-    
-    // FOOD PATTERNS
-    else if (/likes? to eat|loves? to eat|eat out|food pics|food reviews|different foods|different cuisines|try.*food|food.*try|eat.*out|cuisine/i.test(normalizedInfo)) {
-      personalizedNote = "I also noticed you enjoy trying different foods. That's awesome! ";
-    }
-    
-    // SPORTS PATTERNS
-    else if (/fan of sports|sports fan|likes? sports|loves? sports/i.test(normalizedInfo)) {
-      personalizedNote = "I also noticed you're a sports fan. That's awesome! ";
-    }
-    
-    // ADVENTURE PATTERNS
-    else if (/likes? an? adventure|loves? an? adventure|adventur(e|ous)|likes? adventure|loves? adventure/i.test(normalizedInfo)) {
-      personalizedNote = "I also noticed you're adventurous. That's awesome! ";
-    }
-    
-    // CYCLING PATTERNS
-    else if (/cycling|cyclist|cycle|likes? to cycle|loves? to cycle/i.test(normalizedInfo)) {
-      personalizedNote = "I also noticed you're into cycling. That's awesome! ";
-    }
-    
-    // MARTIAL ARTS PATTERNS
-    else if (/taekwondo|karate|judo|martial arts/i.test(normalizedInfo)) {
-      personalizedNote = "I also noticed your martial arts background. That's awesome! ";
-    }
-    
-    // MARATHON PATTERNS
-    else if (/marathon|likes? to (do|run|join) a marathon/i.test(normalizedInfo)) {
-      personalizedNote = "I also noticed you're into marathons. That's impressive endurance! ";
-    }
-    
-    // FAMILY/KIDS PATTERNS
-    else if (/kid|child|baby|family|parent|daughter|son/i.test(normalizedInfo)) {
-      if (/3rd|third|3/i.test(normalizedInfo) && /kid|child|baby/i.test(normalizedInfo)) {
-        personalizedNote = "Congrats on your third child! Family fitness is important too. ";
-      } else if (/2nd|second|2/i.test(normalizedInfo) && /kid|child|baby/i.test(normalizedInfo)) {
-        personalizedNote = "Congrats on your second child! Family fitness is important too. ";
-      } else if (/1st|first|1/i.test(normalizedInfo) && /kid|child|baby/i.test(normalizedInfo)) {
-        personalizedNote = "Congrats on your child! Family fitness is important too. ";
-      } else if (/kid|child|baby/i.test(normalizedInfo)) {
-        personalizedNote = "I see you have kids! Family fitness is important too. ";
-      } else if (/daughter/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you spend time with your daughter. Family fitness is important too. ";
-      } else if (/son/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you spend time with your son. Family fitness is important too. ";
-      }
-    }
-    
-    // MILITARY/INFANTRY PATTERNS
-    else if (/infantry|military|army|navy|air force|marine|SIR|mariner/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed your military background. Respect for your service! ";
-    }
-    
-    // STUDENT/EDUCATION PATTERNS
-    else if (/student|study|college|university|school|graduated|graduation|professor|teach/i.test(normalizedInfo)) {
-      if (/professor|teach/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you're a professor. Great to balance teaching with fitness! ";
-      } else if (/graduated|graduation/i.test(normalizedInfo)) {
-        personalizedNote = "Congrats on your graduation! A perfect time to focus on fitness too. ";
-      } else {
-        personalizedNote = "I noticed you're a student. Great to balance studies with fitness! ";
-      }
-    }
-    
-    // RELATIONSHIP PATTERNS
-    else if (/girlfriend|gf|wife|engaged|married|husband|boyfriend|bf|relationship|partner/i.test(normalizedInfo)) {
-      if (/engaged/i.test(normalizedInfo)) {
-        personalizedNote = "Congrats on your engagement! Fitness journey is always better with a partner. ";
-      } else if (/married/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you're married. Fitness journey is always better with a partner. ";
-      } else if (/girlfriend|gf/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you have a girlfriend. Fitness journey is always better with a partner. ";
-      } else if (/boyfriend|bf/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you have a boyfriend. Fitness journey is always better with a partner. ";
-      } else if (/wife/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you have a wife. Fitness journey is always better with a partner. ";
-      } else if (/husband/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you have a husband. Fitness journey is always better with a partner. ";
-      }
-    }
-    
-    // PHOTOGRAPHY PATTERNS
-    else if (/photography|photos|pictures|pics|selfies|scenery|take.*photos|take.*pictures|take.*pics/i.test(normalizedInfo)) {
-      if (/selfies/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you enjoy taking selfies. Looking good in photos is great fitness motivation! ";
-      } else if (/scenery/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you enjoy photography, especially scenery. That's awesome! ";
-      } else {
-        personalizedNote = "I noticed you're into photography. That's awesome! ";
-      }
-    }
-    
-    // WORKOUT/FITNESS PATTERNS
-    else if (/work out|workout|gym|fitness|exercise|lift.*weight|weight.*lift|powerlift|fitness challenge|swole|gains/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you're already into fitness. That's awesome! Let's take it to the next level. ";
-    }
-    
-    // YOGA PATTERNS
-    else if (/yoga|aerial yoga|teaches yoga/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you're into yoga. Great for flexibility and mindfulness! ";
-    }
-    
-    // VEHICLE PATTERNS
-    else if (/motorcycle|bike|car|cars|motor|vehicle/i.test(normalizedInfo)) {
-      if (/motorcycle|motor/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you're into motorcycles. That's cool! Good fitness helps with riding too. ";
-      } else if (/car|cars/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you're into cars. That's cool! ";
-      }
-    }
-    
-    // WATER ACTIVITIES
-    else if (/kayak|water activity|water sport|boat|marine|explore on water/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you enjoy water activities. That's awesome for fitness! ";
-    }
-    
-    // PET PATTERNS
-    else if (/dog|cat|pet|bulldog|animal/i.test(normalizedInfo)) {
-      if (/dog|bulldog/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you have a dog. Walking your dog is great exercise too! ";
-      } else if (/cat|cats/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you love cats. Pets are great for mental wellbeing too! ";
-      } else {
-        personalizedNote = "I noticed you have pets. They're great for mental wellbeing! ";
-      }
-    }
-    
-    // BUSINESS/WORK PATTERNS
-    else if (/business|work|job|career|financial|consultant|renovate/i.test(normalizedInfo)) {
-      if (/business/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you have your own business. Staying fit helps with productivity too! ";
-      } else if (/financial|consultant/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you work in finance. Staying fit helps with productivity too! ";
-      } else if (/renovate/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you work on renovations. That's physical work already! ";
-      }
-    }
-    
-    // ROCK CLIMBING
-    else if (/rock climbing|climbing/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you're into rock climbing. That's amazing for strength and focus! ";
-    }
-    
-    // HEALTH/WELLNESS
-    else if (/health|wellness|diet|healthy food|health enthusiast|strained muscles|helps.*muscles/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you're already health-conscious. That's awesome! ";
-    }
-    
-    // HOBBIES/INTERESTS
-    else if (/football|soccer|movie|movies|bollywood|indian movies|gaming|game|COC|cap|caps|collect/i.test(normalizedInfo)) {
-      if (/football|soccer/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you're into football. Great sport for fitness! ";
-      } else if (/movie|movies|bollywood|indian/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you enjoy movies. Everyone needs some downtime! ";
-      } else if (/gaming|game|COC/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you're into gaming. Balance with fitness is key! ";
-      } else if (/cap|caps|collect/i.test(normalizedInfo)) {
-        personalizedNote = "I noticed you collect caps. Cool hobby! ";
-      }
-    }
-    
-    // JUDGING/COMPETITION
-    else if (/judge|championship|contest|competition/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed your involvement in competitions. That's impressive! ";
-    }
-    
-    // SOCIAL PATTERNS
-    else if (/friends|hang out|go out|social|party|goof/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you enjoy socializing. Fitness is more fun with friends too! ";
-    }
-    
-    // DANCING
-    else if (/danc|dancing/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you enjoy dancing. Great way to stay fit while having fun! ";
-    }
-    
-    // MODELING
-    else if (/model|dress up/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you're into modeling. Fitness definitely complements that! ";
-    }
-    
-    // HIKING
-    else if (/hik|hiking/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you enjoy hiking. Great for both fitness and experiencing nature! ";
-    }
-    
-    // COUNSELING/HELPING OTHERS
-    else if (/counsel|help.*others/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you might be a counselor. Helping others while taking care of yourself is important! ";
-    }
-    
-    // WEIGHT LOSS GOALS
-    else if (/lose weight|weight loss/i.test(normalizedInfo)) {
-      personalizedNote = "I noticed you're on a weight loss journey. That's awesome commitment! ";
-    }
-    
-    // General catch-all for other activities
-    else {
-      // Try to extract activities from "likes to" or "loves to" phrases
-      const likesToMatch = normalizedInfo.match(/(?:likes|loves) to\s+([a-zA-Z]+)/i);
-      if (likesToMatch && likesToMatch[1]) {
-        const activity = likesToMatch[1].toLowerCase();
-        // Add "ing" to verbs that don't already end in "ing"
-        const activityWithIng = activity.endsWith('ing') ? activity : `${activity}ing`;
-        personalizedNote = `I also noticed you enjoy ${activityWithIng}. That's awesome! `;
-      }
-      // If nothing specific was found but there's a profile pic mention
-      else if (/profile pic|based on|pfp/i.test(normalizedInfo) && !personalizedNote) {
-        // Don't add any note if we can't extract meaningful info
-      }
-    }
-    
-    // Add the personalized note if we found something
-    if (personalizedNote) {
-      message += personalizedNote + "\n\n";
-    }
-  }
-  
-  message += `I am currently looking for 5 people can join my free training project trial!\n\n`;
-  
-  message += `They get:\n`;
-  message += `✅ a Personalised Diet Plan\n`;
-  message += `✅ a Personalised Training Plan\n`;
-  message += `✅ Telegram Chat Support\n`;
-  message += `✅ Physical Form Correction\n`;
-  message += `✅ To improve Mind Muscle Connection\n`;
-  message += `✅ To make more progress with Less Time and Effort\n\n`;
-  
-  message += `To push them in the right direction this year 💪🏻\n`;
-  message += `Do you know anyone who may be interested? : )\n\n`;
-  
-  message += `PS: How's your gym progress going? 🙂`;
-  
-  // Adjust for Singaporean English if requested
-  if (tone === 'singaporean') {
-    message = message
-      .replace('I saw that you were following', 'I saw you following')
-      .replace('keep it up in the gym btw : )', 'keep it up in the gym ah! : )')
-      .replace('wah big respect to you bro', 'wah very power lah, respect sia')
-      .replace('wah super cool stuff man', 'wah very nice leh')
-      .replace('Keep it up man!', 'Keep it up lah!')
-      .replace('I am currently looking for', 'I currently looking for')
-      .replace('who may be interested? : )', 'who might want? Can intro or not? : )')
-      .replace('How\'s your gym progress going?', 'How\'s your gym progress going ah?')
-      .replace('Great for fitness and health!', 'Good for health one sia!')
-      .replace('Such a creative hobby!', 'So creative leh!')
-      .replace('Getting those gains!', 'Getting swole ah!')
-      .replace('Health is wealth!', 'Health is wealth sia!')
-      .replace('Good taste!', 'Good taste lah!')
-      .replace('Seeing the world!', 'See the world shiok ah!')
-      .replace('Tech savvy!', 'Tech savvy leh!')
-      .replace('Very unique interests!', 'Unique combo sia!')
-      .replace('Very well-rounded!', 'So many interests, power lah!')
-      .replace('Great eye for visuals!', 'Your photos must be shiok ah!')
-      .replace('So athletic!', 'So fit one sia!')
-      .replace('Must take amazing travel photos!', 'Your travel photos confirm plus chop very nice one!')
-      .replace('Really taking care of your fitness!', 'You damn fit lah!')
-      .replace('Creative and tech-savvy!', 'Creative and tech-savvy sia, power lah!')
-      .replace('That\'s awesome!', 'That\'s damn shiok sia!')
-      .replace('That\'s impressive endurance!', 'Wah your stamina power sia!')
-      .replace('Family fitness is important too.', 'Family fitness also important one lah.')
-      .replace('Congrats', 'Wah congrats')
-      .replace('Respect for your service!', 'Respect for your service sia!')
-      .replace('Great to balance studies with fitness!', 'Good to balance studies with fitness lah!')
-      .replace('Great to balance teaching with fitness!', 'Good to balance teaching with fitness lah!')
-      .replace('Fitness journey is always better with a partner.', 'Fitness journey always better with partner one lah.')
-      .replace('Looking good in photos is great fitness motivation!', 'Look good in photos is good motivation sia!')
-      .replace('Great for flexibility and mindfulness!', 'Good for flexibility and mindfulness lah!')
-      .replace('That\'s cool!', 'That\'s cool sia!')
-      .replace('That\'s amazing for strength and focus!', 'That one damn good for strength and focus sia!')
-      .replace('Great sport for fitness!', 'Good sport for fitness lah!')
-      .replace('Balance with fitness is key!', 'Must balance with fitness one!')
-      .replace('Fitness is more fun with friends too!', 'Fitness more fun with friends lah!')
-      .replace('Great way to stay fit while having fun!', 'Good way to stay fit while having fun sia!')
-      .replace('Fitness definitely complements that!', 'Fitness confirm plus chop complement that one!')
-      .replace('Great for both fitness and experiencing nature!', 'Good for fitness and see nature lah!')
-      .replace('That\'s awesome commitment!', 'That\'s power commitment sia!');
-  }
-  
   return message;
 };
 
-// Special function for TikTok gym training template
-const getTikTokGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string => {
+const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
   const { name, interests } = leadInfo;
   
-  // Use the exact template provided by the client but adapted for TikTok
-  let message = `@${name} I saw that you were following a couple gym accounts, keep it up in the gym btw : )  \n`;
+  // Parse interests to get first and second trait
+  let firstTrait = '';
+  let secondTrait = '';
   
   if (interests && interests.trim()) {
-    // Handle interests more intelligently for better grammar
-    const interestsList = interests.split('/').map(i => i.trim());
-    
-    if (interestsList.length === 1) {
-      // Single interest
-      const interest = interestsList[0].toLowerCase();
-      
-      // Function to determine if a word should use "an" instead of "a"
-      const shouldUseAn = (word: string): boolean => {
-        // Words starting with vowel sounds use "an"
-        return /^[aeiou]/i.test(word) || 
-               // Special cases like "hour" that start with silent 'h'
-               /^hour/i.test(word) || 
-               /^honest/i.test(word);
-      };
-      
-      // Generate personalized message based on interest type
-      // This ensures each message is uniquely handcrafted for the recipient
-      if (/er$|or$|ist$|ian$|eur$|ant$|ent$|ive$/.test(interest)) {
-        // Profession/role like "developer", "musician", "entrepreneur"
-        const article = shouldUseAn(interest) ? "an" : "a";
-        
-        // Create variations for different professions to make each message unique
-        if (/music|sing|guitar|piano|band|dj/i.test(interest)) {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Your creative talent must be amazing! Keep it up! haha 👍\n\n`;
-        } else if (/develop|program|code|tech|engineer|software/i.test(interest)) {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Tech skills very impressive! Keep it up! haha 👍\n\n`;
-        } else if (/teach|educat|professor|tutor|instructor/i.test(interest)) {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Shaping future generations! Keep it up! haha 👍\n\n`;
-        } else {
-          message += `BTW, saw that you're ${article} ${interest}, wah big respect to you bro. Keep it up! haha 👍\n\n`;
-        }
-      } else if (/ing$/.test(interest)) {
-        // Activity ending in -ing like "swimming", "coding"
-        
-        // Create variations for different activities to make each message unique
-        if (/swim|run|jog|cycle|hik/i.test(interest)) {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Great for fitness and health! Keep it up man! haha 👍\n\n`;
-        } else if (/cook|bak|craft|paint|draw/i.test(interest)) {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Such a creative hobby! Keep it up man! haha 👍\n\n`;
-        } else if (/lift|gym|train|workout/i.test(interest)) {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Getting those gains! Keep it up man! haha 👍\n\n`;
-        } else {
-          message += `BTW, saw that you enjoy ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
-        }
-      } else {
-        // Regular interest/activity
-        
-        // Create variations for different interests to make each message unique
-        if (/fitness|gym|workout|health|exercise/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Health is wealth! Keep it up man! haha 👍\n\n`;
-        } else if (/food|cuisine|cooking|baking/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Good taste! Keep it up man! haha 👍\n\n`;
-        } else if (/travel|adventure|explore/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Seeing the world! Keep it up man! haha 👍\n\n`;
-        } else if (/tech|gadget|gaming|computer/i.test(interest)) {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Tech savvy! Keep it up man! haha 👍\n\n`;
-        } else {
-          message += `BTW, saw that you're into ${interest}, wah super cool stuff man. Keep it up man! haha 👍\n\n`;
-        }
-      }
-    } else {
-      // Multiple interests - create a personalized message that references multiple interests
-      const primaryInterest = interestsList[0].toLowerCase();
-      const secondaryInterest = interestsList[1]?.toLowerCase();
-      
-      if (interestsList.length === 2) {
-        message += `BTW, saw that you're into ${primaryInterest} and ${secondaryInterest}, wah super cool combination man. Very unique interests! Keep it up man! haha 👍\n\n`;
-      } else {
-        message += `BTW, saw that you're into ${interestsList.join(', ')}, wah super cool mix of interests man. Very well-rounded! Keep it up man! haha 👍\n\n`;
-      }
-    }
-  } else {
-    message += `BTW, love your profile, keep it up! haha 👍\n\n`;
+    const traitParts = interests.split('/').map(part => part.trim());
+    firstTrait = traitParts[0] || '';
+    secondTrait = traitParts[1] || '';
   }
   
-  message += `I am currently looking for 5 people can join my free training project trial!\n\n`;
+  // Base message template
+  let message = `Hey ${name}, Jet here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw : )  \n\n`;
   
+  // Add personalized message based on first trait
+  if (firstTrait) {
+    let personalizedBTW = getPersonalizedBTWMessage(firstTrait);
+    message += `BTW, ${personalizedBTW}\n\n`;
+  }
+  
+  // Add the standard offer section
+  message += `I am currently looking for 5 people can join my free training project trial!\n\n`;
   message += `They get:\n`;
   message += `✅ a Personalised Diet Plan\n`;
   message += `✅ a Personalised Training Plan\n`;
@@ -558,207 +62,245 @@ const getTikTokGymTrainingMessage = (leadInfo: LeadInfo, tone: string): string =
   message += `✅ Physical Form Correction\n`;
   message += `✅ To improve Mind Muscle Connection\n`;
   message += `✅ To make more progress with Less Time and Effort\n\n`;
-  
   message += `To push them in the right direction this year 💪🏻\n`;
-  message += `Do you know anyone who may be interested? : )\n\n`;
+  message += `Do you know anyone who may be interested?\n\n`;
   
-  message += `PS: How's your gym progress going? 🙂`;
+  // Add personalized PS based on second trait
+  if (secondTrait) {
+    let personalizedPS = getPersonalizedPSMessage(secondTrait);
+    message += `PS: ${personalizedPS}`;
+  } else {
+    message += `PS: How's your gym progress going? : )`;
+  }
   
-  // Adjust for Singaporean English if requested
-  if (tone === 'singaporean') {
-    message = message
-      .replace('I saw that you were following', 'I saw you following')
-      .replace('keep it up in the gym btw : )', 'keep it up in the gym ah! : )')
-      .replace('wah big respect to you bro', 'wah very power lah, respect sia')
-      .replace('wah super cool stuff man', 'wah very nice leh')
-      .replace('Keep it up man!', 'Keep it up lah!')
-      .replace('I am currently looking for', 'I currently looking for')
-      .replace('who may be interested? : )', 'who might want? Can intro or not? : )')
-      .replace('How\'s your gym progress going?', 'How\'s your gym progress going ah?')
-      .replace('Great for fitness and health!', 'Good for health one sia!')
-      .replace('Such a creative hobby!', 'So creative leh!')
-      .replace('Getting those gains!', 'Getting swole ah!')
-      .replace('Health is wealth!', 'Health is wealth sia!')
-      .replace('Good taste!', 'Good taste lah!')
-      .replace('Seeing the world!', 'See the world shiok ah!')
-      .replace('Tech savvy!', 'Tech savvy leh!')
-      .replace('Very unique interests!', 'Unique combo sia!')
-      .replace('Very well-rounded!', 'So many interests, power lah!');
+  // Apply Singlish based on tone level
+  if (tone === 'level2') {
+    // Only BTW phrase is Singlish
+    message = message.replace('BTW,', 'Eh sia,')
+                    .replace(/love it haha|power lah! Keep it up!|that's cool sia!/g, 'sibei nice leh')
+                    .replace('👍', 'sia 👍');
+  } else if (tone === 'level3') {
+    // BTW and PS parts are Singlish
+    message = message.replace('BTW,', 'Eh sia,')
+                    .replace(/love it haha|power lah! Keep it up!|that's cool sia!/g, 'sibei nice leh')
+                    .replace('👍', 'sia 👍')
+                    .replace(/PS: How's your gym progress going\?/g, "PS: How's your gym progress ah?")
+                    .replace(/PS: How's (.+?) going\?/g, "PS: How's $1 going ah?")
+                    .replace(/PS: (.+?)\?/g, "PS: $1 ah?")
+                    .replace('Do you know anyone who may be interested?', 'Got anyone interested or not?');
+  } else if (tone === 'level4') {
+    // Full Singlish except services offered
+    message = message.replace('Jet here btw,', 'Jet here lah,')
+                    .replace('keep it up in the gym btw : )', 'keep it up in the gym ah! : )')
+                    .replace('BTW,', 'Eh sia,')
+                    .replace(/love it haha|power lah! Keep it up!|that's cool sia!/g, 'sibei nice leh')
+                    .replace('👍', 'sia 👍')
+                    .replace('I am currently looking for', 'I currently looking for')
+                    .replace('can join', 'can join in')
+                    .replace('To push them in the right direction this year', 'Help them level up this year')
+                    .replace('Do you know anyone who may be interested?', 'Got anyone interested or not?')
+                    .replace(/PS: How's your gym progress going\?/g, "PS: How's your gym progress ah?")
+                    .replace(/PS: How's (.+?) going\?/g, "PS: How's $1 going ah?")
+                    .replace(/PS: (.+?)\?/g, "PS: $1 ah?");
   }
   
   return message;
 };
 
-// Helper function to generate a subject line
-const getSubjectLine = (leadInfo: LeadInfo, template: string): string => {
-  switch (template) {
-    case 'Cold Email':
-      return `Helping ${leadInfo.company} improve ${leadInfo.industry} outcomes`;
-    case 'Follow-up Email':
-      return `Following up on our previous conversation - ${leadInfo.company}`;
-    case 'Meeting Request':
-      return `Request for a quick call - ${leadInfo.company} and [Your Company]`;
-    case 'Value Proposition':
-      return `Specific value for ${leadInfo.company} in ${leadInfo.industry}`;
-    default:
-      return `Connecting with ${leadInfo.company}`;
+// Helper function to generate personalized BTW message based on first trait
+const getPersonalizedBTWMessage = (trait: string): string => {
+  trait = trait.toLowerCase();
+  
+  // Work-related traits
+  if (trait.includes('work') || trait.includes('job') || trait.includes('career') || trait.includes('at ')) {
+    return `saw that you ${trait}, that's awesome! Keep up the great work! 👍`;
   }
+  
+  // Profession-related traits
+  if (trait.includes('teacher') || trait.includes('professor')) {
+    return `noticed you're a ${trait}, must be rewarding shaping young minds! 👍`;
+  }
+  
+  if (trait.includes('engineer')) {
+    return `saw you're an ${trait}, that's impressive! 👍`;
+  }
+  
+  if (trait.includes('designer') || trait.includes('design')) {
+    return `noticed you're into ${trait}, your creative eye must be useful in other areas too! 👍`;
+  }
+  
+  if (trait.includes('agent') || trait.includes('estate')) {
+    return `saw you're a ${trait}, must be exciting helping people find their dream homes! 👍`;
+  }
+  
+  if (trait.includes('health') || trait.includes('doctor') || trait.includes('nurse')) {
+    return `noticed you work in ${trait}, respect for the important work you do! 👍`;
+  }
+  
+  // Education-related traits
+  if (trait.includes('stud') || trait.includes('law') || trait.includes('smu') || trait.includes('university')) {
+    return `saw that you ${trait}, that's impressive! Keep crushing those studies! 👍`;
+  }
+  
+  // Fitness-related traits
+  if (trait.includes('fitness') || trait.includes('gym') || trait.includes('workout')) {
+    return `noticed you're into ${trait}, love seeing the dedication! 👍`;
+  }
+  
+  if (trait.includes('swimming') || trait.includes('athlete')) {
+    return `saw you're into ${trait}, that's awesome! Great for overall fitness! 👍`;
+  }
+  
+  // Style-related traits
+  if (trait.includes('jacket') || trait.includes('shirt') || trait.includes('tshirt') || trait.includes('beanie') || trait.includes('cap') || trait.includes('coat')) {
+    return `noticed your ${trait}, looking good! 👍`;
+  }
+  
+  if (trait.includes('stylish') || trait.includes('style') || trait.includes('fashion')) {
+    return `saw your ${trait}, great taste! 👍`;
+  }
+  
+  if (trait.includes('hair') || trait.includes('unique')) {
+    return `noticed your ${trait}, looks great! 👍`;
+  }
+  
+  // Hobby-related traits
+  if (trait.includes('photography') || trait.includes('photo')) {
+    return `saw you're into ${trait}, you must have a great eye for detail! 👍`;
+  }
+  
+  if (trait.includes('travel')) {
+    return `noticed you're into ${trait}, always great to explore new places! 👍`;
+  }
+  
+  if (trait.includes('adventure')) {
+    return `saw you love ${trait}, that adventurous spirit is awesome! 👍`;
+  }
+  
+  if (trait.includes('food') || trait.includes('foodie')) {
+    return `noticed you're a ${trait}, good food is one of life's best pleasures! 👍`;
+  }
+  
+  if (trait.includes('magic') || trait.includes('magician')) {
+    return `saw you're ${trait.includes('a') ? '' : 'a '}${trait}, that's so cool! 👍`;
+  }
+  
+  if (trait.includes('muay thai') || trait.includes('martial art')) {
+    return `noticed you do ${trait}, that's awesome! Great for fitness and discipline! 👍`;
+  }
+  
+  if (trait.includes('fire') || trait.includes('rescue')) {
+    return `saw you work in ${trait}, much respect for what you do! 👍`;
+  }
+  
+  if (trait.includes('car') || trait.includes('vehicle')) {
+    return `noticed your awesome ${trait}, that's a sweet ride! 👍`;
+  }
+  
+  // Default response if no specific pattern matches
+  return `${trait} love it haha 👍`;
 };
 
-// Helper function to generate content based on template
-const getTemplateContent = (leadInfo: LeadInfo, tone: string, template: string): string => {
-  // In a real implementation, this would call an AI service like OpenAI
-  // For demo purposes, we'll use template strings
+// Helper function to generate personalized PS message based on second trait
+const getPersonalizedPSMessage = (trait: string): string => {
+  trait = trait.toLowerCase();
   
-  let content = '';
-  
-  switch (template) {
-    case 'Cold Email':
-      content = `I hope this message finds you well. I noticed that ${leadInfo.company} is making significant strides in the ${leadInfo.industry} industry.
-
-Based on your role as ${leadInfo.position}, I thought you might be interested in how we've helped similar companies overcome challenges related to ${leadInfo.painPoints || 'efficiency and growth'}.
-
-Our solution has specifically helped companies in the ${leadInfo.industry} industry to improve their outcomes by addressing these exact pain points.
-
-${leadInfo.additionalInfo ? `I also noticed that ${leadInfo.additionalInfo}. This is an area where our solution could provide particular value.` : ''}
-
-Would you be open to a brief conversation to explore how we might be able to help ${leadInfo.company} achieve similar results?`;
-      break;
-      
-    case 'Follow-up Email':
-      content = `I wanted to follow up on my previous message about how we might be able to help ${leadInfo.company} with ${leadInfo.painPoints || 'your industry challenges'}.
-
-I understand that as ${leadInfo.position}, you're likely focused on driving results in these areas. Many of our clients in the ${leadInfo.industry} industry have faced similar challenges and have seen significant improvements after implementing our solution.
-
-${leadInfo.additionalInfo ? `Regarding ${leadInfo.additionalInfo}, I'd be happy to share some specific insights on how our approach could address this.` : ''}
-
-I'm available for a quick call this week if you'd like to discuss this further.`;
-      break;
-      
-    case 'LinkedIn Connection':
-      content = `I came across your profile and was impressed by your work at ${leadInfo.company} in the ${leadInfo.industry} industry.
-
-As someone who works with ${leadInfo.position}s to help address challenges like ${leadInfo.painPoints || 'industry-specific challenges'}, I thought connecting could be mutually beneficial.
-
-${leadInfo.additionalInfo ? `I noticed that ${leadInfo.additionalInfo}, and I have some insights that might be valuable.` : ''}
-
-I look forward to connecting!`;
-      break;
-      
-    case 'LinkedIn InMail':
-      content = `I hope you don't mind me reaching out directly. I've been following ${leadInfo.company}'s progress in the ${leadInfo.industry} space and have been impressed with what I've seen.
-
-In your role as ${leadInfo.position}, I imagine you might be dealing with challenges related to ${leadInfo.painPoints || 'typical industry challenges'}. Our company specializes in helping businesses like yours overcome these exact issues.
-
-${leadInfo.additionalInfo ? `I also noticed that ${leadInfo.additionalInfo}, which is an area where we've developed specific expertise.` : ''}
-
-Would you be open to a brief conversation to explore potential synergies?`;
-      break;
-      
-    case 'Meeting Request':
-      content = `I'd like to request a brief 15-minute call to discuss how we might be able to help ${leadInfo.company} address challenges related to ${leadInfo.painPoints || 'your industry-specific needs'}.
-
-We've worked with several companies in the ${leadInfo.industry} industry, and I believe our insights could be valuable given your role as ${leadInfo.position}.
-
-${leadInfo.additionalInfo ? `I'm particularly interested in discussing ${leadInfo.additionalInfo}, as this aligns with our area of expertise.` : ''}
-
-Would any of these times work for you?
-- Tuesday at 10:00 AM
-- Wednesday at 2:00 PM
-- Thursday at 11:30 AM`;
-      break;
-      
-    case 'Value Proposition':
-      content = `I wanted to share specifically how our solution could create value for ${leadInfo.company} in the ${leadInfo.industry} industry.
-
-For companies with challenges similar to ${leadInfo.painPoints || 'typical industry challenges'}, we've been able to deliver:
-
-1. 20% improvement in operational efficiency
-2. 15% reduction in costs
-3. 30% increase in customer satisfaction
-
-As ${leadInfo.position}, I imagine these outcomes would align with your priorities.
-
-${leadInfo.additionalInfo ? `Additionally, regarding ${leadInfo.additionalInfo}, we have a specialized approach that has yielded exceptional results for similar companies.` : ''}
-
-I'd welcome the opportunity to discuss how we could achieve similar results for ${leadInfo.company}.`;
-      break;
-      
-    default:
-      content = `I'm reaching out regarding ${leadInfo.company} and your role as ${leadInfo.position} in the ${leadInfo.industry} industry.
-
-I believe we might be able to help with challenges related to ${leadInfo.painPoints || 'your specific needs'}.
-
-${leadInfo.additionalInfo ? `I also wanted to mention that ${leadInfo.additionalInfo}, which is something we could potentially help with.` : ''}
-
-Would you be interested in learning more?`;
+  // Travel-related traits
+  if (trait.includes('travel')) {
+    if (trait.includes('fam')) {
+      return `How was the travel with family? : )`;
+    }
+    return `How were your travels recently? : )`;
   }
   
-  // Adjust tone if needed
-  if (tone === 'friendly') {
-    content = content.replace('I hope this message finds you well.', 'Hope you\'re having a great week!');
-    content = content.replace('would you be open to', 'would you be up for');
-  } else if (tone === 'formal') {
-    content = content.replace('I hope this message finds you well.', 'I trust this message finds you well.');
-    content = content.replace('help you', 'assist you');
-  } else if (tone === 'persuasive') {
-    content = content.replace('I believe we might be able to help', 'We have a proven track record of helping');
-    content = content.replace('would you be interested', 'you won\'t want to miss this opportunity');
-  } else if (tone === 'singaporean') {
-    content = content.replace('I hope this message finds you well.', 'Hope you doing well ah!');
-    content = content.replace('would you be open to', 'can or not we have');
-    content = content.replace('I believe', 'I think');
-    content = content.replace('Would you be interested', 'You interested or not');
+  // Fitness-related traits
+  if (trait.includes('fitness') || trait.includes('gym') || trait.includes('workout')) {
+    return `How's your fitness journey going? : )`;
   }
   
-  return content;
+  // Photography-related traits
+  if (trait.includes('photography') || trait.includes('photo')) {
+    return `Captured any great shots recently? : )`;
+  }
+  
+  // Style-related traits
+  if (trait.includes('jacket') || trait.includes('shirt') || trait.includes('tshirt') || trait.includes('beanie') || trait.includes('cap') || trait.includes('coat')) {
+    return `Where did you get that awesome ${trait}? : )`;
+  }
+  
+  // Adventure-related traits
+  if (trait.includes('adventure')) {
+    if (trait.includes('wife') || trait.includes('spouse') || trait.includes('partner')) {
+      return `How are the adventures with your ${trait.includes('wife') ? 'wife' : 'partner'} going? : )`;
+    }
+    return `What's your next adventure? : )`;
+  }
+  
+  // Work-related traits
+  if (trait.includes('work') || trait.includes('job') || trait.includes('career') || trait.includes('at ')) {
+    return `How's work going? : )`;
+  }
+  
+  // Default response if no specific pattern matches
+  return `How's your gym progress going? : )`;
 };
 
-// In a real implementation, you would integrate with an AI API like OpenAI
-// Here's how you might implement it:
-/*
-export const generateMessageWithAI = async (request: MessageRequest): Promise<string> => {
-  const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
+const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
+  const { name, interests } = leadInfo;
   
-  try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-4',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert in crafting personalized outreach messages for lead generation. 
-                     Create a ${request.tone} ${request.messageType} message using the ${request.template} template.`
-          },
-          {
-            role: 'user',
-            content: `Generate a personalized ${request.messageType} message for a lead with the following information:
-                     Name: ${request.leadInfo.name}
-                     Company: ${request.leadInfo.company}
-                     Industry: ${request.leadInfo.industry}
-                     Position: ${request.leadInfo.position}
-                     Pain Points: ${request.leadInfo.painPoints}
-                     Additional Info: ${request.leadInfo.additionalInfo}
-                     
-                     The message should be in a ${request.tone} tone and follow the ${request.template} template.`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 500
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    
-    return response.data.choices[0].message.content;
-  } catch (error) {
-    console.error('Error calling OpenAI API:', error);
-    throw new Error('Failed to generate message with AI');
+  // Parse interests to get first and second trait
+  let firstTrait = '';
+  let secondTrait = '';
+  
+  if (interests && interests.trim()) {
+    const traitParts = interests.split('/').map(part => part.trim());
+    firstTrait = traitParts[0] || '';
+    secondTrait = traitParts[1] || '';
   }
-};
-*/ 
+
+  // Base message template
+  let message = `Hey ${name}, Bob here, i'm not too sure if my friend Jet has reached out to you yet, @_muscle.baby_\n`;
+  message += `but we are hosting a free training project trial, and 5 people can join us for free : )\n\n`;
+  message += `They get:\n`;
+  message += `✅ a Personalised Diet Plan\n`;
+  message += `✅ a Personalised Training Plan\n`;
+  message += `✅ Telegram Chat Support\n`;
+  message += `✅ Physical Form Correction\n`;
+  message += `✅ To improve Mind Muscle Connection\n`;
+  message += `✅ To make more progress with Less Time and Effort\n\n`;
+  message += `To push them in the right direction this year 💪🏻\n`;
+  message += `Would you be opposed to taking a slot for yourself?\n\n`;
+  
+  // Add personalized PS based on second trait
+  if (secondTrait) {
+    let personalizedPS = getPersonalizedPSMessage(secondTrait);
+    message += `P.S. ${personalizedPS}`;
+  } else {
+    message += `P.S. How's your gym progress going? : )`;
+  }
+
+  // Apply Singlish based on tone level
+  if (tone === 'level2') {
+    // Only BTW phrase is Singlish (no BTW in follow-up template)
+    message = message;
+  } else if (tone === 'level3') {
+    // PS part is Singlish
+    message = message.replace(/P.S. How's your gym progress going\?/g, "P.S. How's your gym progress ah?")
+                    .replace(/P.S. How's (.+?) going\?/g, "P.S. How's $1 going ah?")
+                    .replace(/P.S. (.+?)\?/g, "P.S. $1 ah?")
+                    .replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?');
+  } else if (tone === 'level4') {
+    // Full Singlish except services offered
+    message = message.replace('Bob here,', 'Bob here lah,')
+                    .replace("i'm not too sure if", 'not sure if')
+                    .replace('but we are hosting', 'but we got')
+                    .replace('can join us', 'can join with us')
+                    .replace('To push them in the right direction this year', 'Help them level up this year')
+                    .replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?')
+                    .replace(/P.S. How's your gym progress going\?/g, "P.S. How's your gym progress ah?")
+                    .replace(/P.S. How's (.+?) going\?/g, "P.S. How's $1 going ah?")
+                    .replace(/P.S. (.+?)\?/g, "P.S. $1 ah?");
+  }
+
+  return message;
+}; 

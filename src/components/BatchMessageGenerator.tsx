@@ -5,7 +5,6 @@ import { generateMessage } from '../services/aiService';
 interface Lead {
   name: string;
   interests: string;
-  additionalInfo: string;
 }
 
 interface BatchMessage {
@@ -17,9 +16,8 @@ interface BatchMessage {
 
 const BatchMessageGenerator: React.FC = () => {
   const [batchInput, setBatchInput] = useState<string>('');
-  const [messageType, setMessageType] = useState('instagram');
-  const [tone, setTone] = useState('singaporean'); // Default to Singaporean English as per requirement
-  const [template, setTemplate] = useState('Gym Training Offer');
+  const [tone, setTone] = useState('level0');
+  const [template, setTemplate] = useState('company');
   const [batchMessages, setBatchMessages] = useState<BatchMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,32 +42,62 @@ const BatchMessageGenerator: React.FC = () => {
         if (parts.length >= 2) {
           const name = parts[0].trim();
           const interests = parts[1].trim();
-          // For the third column, preserve it as additional info
+          // Additional info is now incorporated into interests if present
           const additionalInfo = parts[2]?.trim() || '';
           
           if (name) {
             leads.push({
               name,
-              interests,
-              additionalInfo
+              interests: additionalInfo ? `${interests} / ${additionalInfo}` : interests
             });
           }
         }
       }
     } else {
-      // Process three lines per lead format
-      // Skip empty lines first
-      const nonEmptyLines = lines.filter(line => line.trim() !== '');
-      
-      for (let i = 0; i < nonEmptyLines.length; i += 3) {
-        if (i + 2 < nonEmptyLines.length) {
-          const name = nonEmptyLines[i].trim();
-          const interests = nonEmptyLines[i + 1].trim();
-          const additionalInfo = nonEmptyLines[i + 2].trim();
+      // First, try to process as name followed by interests with slash format
+      let i = 0;
+      while (i < lines.length) {
+        const currentLine = lines[i].trim();
+        
+        // Skip empty lines
+        if (!currentLine) {
+          i++;
+          continue;
+        }
+        
+        // Check if this is a name line
+        const name = currentLine;
+        
+        // Check if the next line exists and contains interests
+        if (i + 1 < lines.length) {
+          const interestsLine = lines[i + 1].trim();
           
-          if (name) {
-            leads.push({ name, interests, additionalInfo });
+          if (interestsLine && name) {
+            leads.push({
+              name,
+              interests: interestsLine
+            });
+            
+            // Move to the line after the interests
+            i += 2;
+            
+            // Skip any empty lines between entries
+            while (i < lines.length && !lines[i].trim()) {
+              i++;
+            }
+          } else {
+            // If the next line is empty, just move to the next line
+            i++;
           }
+        } else {
+          // If there's no next line, just add the name
+          if (name) {
+            leads.push({
+              name,
+              interests: ''
+            });
+          }
+          i++;
         }
       }
     }
@@ -117,15 +145,15 @@ const BatchMessageGenerator: React.FC = () => {
           const result = await generateMessage({
             leadInfo: {
               name: lead.name,
+              interests: lead.interests,
               company: '',
               industry: '',
               position: '',
               painPoints: '',
-              additionalInfo: lead.additionalInfo || '',
-              interests: lead.interests,
+              additionalInfo: '',
               location: 'Singapore' // Default location
             },
-            messageType,
+            messageType: 'instagram',
             tone,
             template
           });
@@ -229,17 +257,13 @@ const BatchMessageGenerator: React.FC = () => {
                     rows={10}
                     value={batchInput}
                     onChange={(e) => setBatchInput(e.target.value)}
-                    placeholder={`Format 1 (tab-separated):\nDrake\tPhotography/Gaming\tbased on profile pic, likes to travel\nAlex Ng\tRunning Sports\tBased on profile pic, likes to do a marathon\n\nFormat 2 (three lines per lead):\nDrake\nPhotography/Gaming\nbased on profile pic, likes to travel\n\nAlex Ng\nRunning Sports\nBased on profile pic, likes to do a marathon`}
+                    placeholder={`Name\nInterests / Additional Info\n\nExample:\nhenry tay\nworks at (ig/mindmusclesg) / traveling with fam\n\nbenjamin cerezo\nfitness / traveling`}
                     isInvalid={isOverLimit}
                   />
                   <Form.Text className={isOverLimit ? "text-danger" : "text-muted"}>
                     {isOverLimit ? 
                       `Too many profiles (${leadCount}). Maximum allowed is ${MAX_PROFILES} for quality purposes.` : 
-                      `Two formats accepted:
-                      1. Tab-separated format: Name[tab]Interests[tab]Additional Info
-                      2. Three lines per lead: Name, Interests, Additional Info (each on a separate line)
-                      
-                      Multiple interests can be separated with "/" (e.g., Photography/Gaming)`
+                      `Format: Name on first line, followed by interests/traits on second line separated by "/"\n\nExample:\nhenry tay\nworks at (ig/mindmusclesg) / traveling with fam`
                     }
                   </Form.Text>
                 </Form.Group>
@@ -252,30 +276,15 @@ const BatchMessageGenerator: React.FC = () => {
               <Card.Header>Message Settings</Card.Header>
               <Card.Body>
                 <Form.Group className="mb-3">
-                  <Form.Label>Message Platform</Form.Label>
-                  <Form.Select 
-                    value={messageType}
-                    onChange={(e) => setMessageType(e.target.value)}
-                  >
-                    <option value="instagram">Instagram</option>
-                    <option value="tiktok">TikTok</option>
-                    <option value="email">Email</option>
-                    <option value="linkedin">LinkedIn</option>
-                  </Form.Select>
-                </Form.Group>
-                
-                <Form.Group className="mb-3">
                   <Form.Label>Message Tone</Form.Label>
                   <Form.Select 
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                   >
-                    <option value="singaporean">Singaporean English</option>
-                    <option value="friendly">Friendly</option>
-                    <option value="professional">Professional</option>
-                    <option value="casual">Casual</option>
-                    <option value="formal">Formal</option>
-                    <option value="persuasive">Persuasive</option>
+                    <option value="level0">Level 0 - Normal (no Singaporean english)</option>
+                    <option value="level2">Level 2 - BTW phrase is only Singaporean english</option>
+                    <option value="level3">Level 3 - BTW and PS part is Singaporean english</option>
+                    <option value="level4">Level 4 - Entire message template except the services offered are Singaporean english</option>
                   </Form.Select>
                 </Form.Group>
                 
@@ -285,8 +294,8 @@ const BatchMessageGenerator: React.FC = () => {
                     value={template}
                     onChange={(e) => setTemplate(e.target.value)}
                   >
-                    <option value="Gym Training Offer">Gym Training Offer (Instagram)</option>
-                    <option value="TikTok Gym Training Offer">Gym Training Offer (TikTok)</option>
+                    <option value="company">Company Account Template</option>
+                    <option value="followup">Normal Follow up Template</option>
                   </Form.Select>
                 </Form.Group>
               </Card.Body>
@@ -349,7 +358,6 @@ const BatchMessageGenerator: React.FC = () => {
                   <th>#</th>
                   <th>Name</th>
                   <th>Interests</th>
-                  <th>Additional Info</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -360,7 +368,6 @@ const BatchMessageGenerator: React.FC = () => {
                     <td>{index + 1}</td>
                     <td>{item.lead.name}</td>
                     <td>{item.lead.interests}</td>
-                    <td>{item.lead.additionalInfo}</td>
                     <td>
                       {item.isError ? (
                         <span className="text-danger">Error</span>
