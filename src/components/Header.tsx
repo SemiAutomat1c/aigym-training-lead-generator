@@ -54,6 +54,12 @@ const Header: React.FC = () => {
               Lead Formatter
             </NavLinkRouter>
             <NavLinkRouter 
+              to="/test-examples" 
+              active={location.pathname === '/test-examples'}
+            >
+              Test Examples
+            </NavLinkRouter>
+            <NavLinkRouter 
               to="/about" 
               active={location.pathname === '/about'}
             >

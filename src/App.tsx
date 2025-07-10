@@ -7,6 +7,7 @@ import Home from './components/Home';
 import BatchMessageGenerator from './components/BatchMessageGenerator';
 import AboutPage from './components/AboutPage';
 import Formatter from './components/Formatter';
+import TestExamples from './components/TestExamples';
 
 const App: React.FC = () => {
   // Update document title
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/batch" element={<BatchMessageGenerator />} />
           <Route path="/formatter" element={<Formatter />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/test-examples" element={<TestExamples />} />
         </Routes>
       </main>
     </div>

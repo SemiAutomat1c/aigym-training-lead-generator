@@ -9,18 +9,42 @@ interface TraitPersonalization {
 const normalizeTraitText = (trait: string): string => {
   let normalized = trait.toLowerCase().trim();
   
-  // Handle Instagram handle format: works at (ig/xyz)
-  if (normalized.includes('(ig/')) {
-    normalized = normalized.replace(/\(ig\/([^)]+)\)/g, '$1');
-  }
-  
-  // Fix common typos
+  // Fix common typos found in real data
   normalized = normalized
     .replace(/travelig/g, 'traveling')
     .replace(/promotoes/g, 'promotes')
-    .replace(/stuided/g, 'studied');
+    .replace(/stuided/g, 'studied')
+    .replace(/ncie/g, 'nice')
+    .replace(/ahs/g, 'has')
+    .replace(/nie/g, 'nice')
+    .replace(/playig/g, 'playing')
+    .replace(/flexing back muscle/g, 'flexing his back muscles');
   
   return normalized;
+};
+
+/**
+ * Extracts the handle or website from parentheses for message personalization
+ */
+const extractHandleOrWebsite = (trait: string): string | null => {
+  // Match patterns like (ig/mindmusclesg), (tt/@gibsaw), etc.
+  const igMatch = trait.match(/\(ig\/([^)]+)\)/i);
+  const igColonMatch = trait.match(/\(ig:\s*([^)]+)\)/i);
+  const igAtMatch = trait.match(/\(ig\s*@([^)]+)\)/i);
+  const ttMatch = trait.match(/\(tt\/\s*@?([^)]+)\)/i);
+  const atMatch = trait.match(/\(@([^)]+)\)/i);
+  const instagramMatch = trait.match(/\(instagram:\s*([^)]+)\)/i);
+  const websiteMatch = trait.match(/\(([^@/]+\.[^)]+)\)/i);
+  
+  if (igMatch) return igMatch[1].trim();
+  if (igColonMatch) return igColonMatch[1].trim();
+  if (igAtMatch) return igAtMatch[1].trim();
+  if (ttMatch) return ttMatch[1].trim();
+  if (atMatch) return atMatch[1].trim();
+  if (instagramMatch) return instagramMatch[1].trim();
+  if (websiteMatch) return websiteMatch[1].trim();
+  
+  return null;
 };
 
 /**
@@ -28,46 +52,145 @@ const normalizeTraitText = (trait: string): string => {
  */
 export const generateFirstTraitMessage = (trait: string): string => {
   const lowerTrait = normalizeTraitText(trait);
+  const handle = extractHandleOrWebsite(trait);
   
-  // Work/Professional patterns
+  // Handle work at specific company with social handle
+  if (lowerTrait.includes('work') && lowerTrait.includes('at') && handle) {
+    return `saw that you work at ${handle}, that's awesome`;
+  }
+  
+  // Handle business owner with website or handle
+  if (lowerTrait.includes('business') && handle) {
+    return `saw that you own ${handle}, business success`;
+  }
+  
+  // Handle content creator with social handle
+  if (lowerTrait.includes('content creator') && handle) {
+    return `saw that you're a content creator at ${handle}, creative genius`;
+  }
+  
+  // Fitness & Sports (Most Common)
+  if (lowerTrait.includes('fitness')) {
+    return `saw that you're into fitness, power`;
+  }
+  if (lowerTrait.includes('bodybuilding')) {
+    return `saw your bodybuilding journey, beast mode`;
+  }
+  if (lowerTrait.includes('powerlift')) {
+    return `saw your powerlifting skills, strength king`;
+  }
+  if (lowerTrait.includes('swim')) {
+    return `saw that you're into swimming, aquatic ace`;
+  }
+  if (lowerTrait.includes('athlete')) {
+    return `saw that you're an athlete, sports warrior`;
+  }
+  if (lowerTrait.includes('boxing')) {
+    return `saw your boxing training, fighter spirit`;
+  }
+  if (lowerTrait.includes('cycling') || lowerTrait.includes('bike')) {
+    return `saw your cycling adventures, pedal power`;
+  }
+  if (lowerTrait.includes('rock climbing') || lowerTrait.includes('climbing')) {
+    return `saw your climbing skills, scaling heights`;
+  }
+  if (lowerTrait.includes('run')) {
+    return `saw that you're into running, cardio king`;
+  }
+  if (lowerTrait.includes('taekwondo')) {
+    return `saw your taekwondo skills, martial arts master`;
+  }
+  if (lowerTrait.includes('fencing')) {
+    return `saw your fencing skills, sword master`;
+  }
+  if (lowerTrait.includes('rowing')) {
+    return `saw your rowing training, water warrior`;
+  }
+  if (lowerTrait.includes('surfing')) {
+    return `saw that you're into surfing, wave rider`;
+  }
+  if (lowerTrait.includes('muay thai')) {
+    return `saw your muay thai training, fighter spirit`;
+  }
+  if (lowerTrait.includes('bowling')) {
+    return `saw your bowling skills, strike master`;
+  }
+  if (lowerTrait.includes('scuba') || lowerTrait.includes('diving')) {
+    return `saw your diving adventures, underwater explorer`;
+  }
+  
+  // Professional/Work (Common)
   if (lowerTrait.includes('work') && lowerTrait.includes('at')) {
     const workplace = lowerTrait.split('at')[1]?.trim() || 'your company';
     return `saw that you work at ${workplace}, that's awesome`;
   }
-  if (lowerTrait.includes('health worker')) {
-    return `saw that you're a health worker, respect man`;
+  if (lowerTrait.includes('business owner')) {
+    return `saw that you're a business owner, entrepreneur vibes`;
   }
-  if (lowerTrait.includes('real estate') || lowerTrait.includes('property')) {
-    return `saw that you're in real estate, hustling hard`;
+  if (lowerTrait.includes('co founder') || lowerTrait.includes('cofounder')) {
+    return `saw that you're a co founder, entrepreneurial spirit`;
+  }
+  if (lowerTrait.includes('engineer')) {
+    return `saw that you're an engineer, tech genius`;
   }
   if (lowerTrait.includes('teach')) {
     return `saw that you're a teacher, noble profession`;
   }
   if (lowerTrait.includes('doctor')) {
-    return `saw that you're a doctor, saving lives`;
+    return `saw that you're a doctor, life saver`;
   }
   if (lowerTrait.includes('nurse')) {
     return `saw that you're a nurse, healthcare hero`;
   }
-  if (lowerTrait.includes('engineer')) {
-    return `saw that you're an engineer, smart cookie`;
+  if (lowerTrait.includes('physio')) {
+    return `saw that you're a physiotherapist, healing hands`;
   }
-  if (lowerTrait.includes('lawyer')) {
-    return `saw that you're a lawyer, justice warrior`;
+  if (lowerTrait.includes('fire') || lowerTrait.includes('rescue')) {
+    return `saw that you're in fire rescue, hero status`;
+  }
+  if (lowerTrait.includes('police')) {
+    return `saw that you're a police officer, keeping us safe`;
   }
   if (lowerTrait.includes('chef')) {
     return `saw that you're a chef, culinary master`;
   }
+  if (lowerTrait.includes('barber')) {
+    return `saw that you're a barber, style creator`;
+  }
+  if (lowerTrait.includes('dj')) {
+    return `saw that you're a DJ, music maestro`;
+  }
+  if (lowerTrait.includes('photographer')) {
+    return `saw your photography skills, artistic eye`;
+  }
+  if (lowerTrait.includes('musician')) {
+    return `saw your music talents, sound creator`;
+  }
+  if (lowerTrait.includes('content creator')) {
+    return `saw that you're a content creator, creative genius`;
+  }
+  if (lowerTrait.includes('financial advisor')) {
+    return `saw that you're a financial advisor, money guru`;
+  }
   
-  // Education patterns
+  // Education/Military
   if (lowerTrait.includes('stud') && lowerTrait.includes('smu') && lowerTrait.includes('law')) {
-    return `saw that you studied SMU law, smart`;
+    return `saw that you studied SMU law, legal eagle`;
   }
   if (lowerTrait.includes('stud') && lowerTrait.includes('nus')) {
     return `saw that you studied NUS, impressive`;
   }
   if (lowerTrait.includes('stud') && lowerTrait.includes('ntu')) {
     return `saw that you studied NTU, engineering pro`;
+  }
+  if (lowerTrait.includes('student')) {
+    return `saw that you're a student, knowledge seeker`;
+  }
+  if (lowerTrait.includes('just graduated') || lowerTrait.includes('graduated')) {
+    return `saw that you just graduated, fresh start`;
+  }
+  if (lowerTrait.includes('army') || lowerTrait.includes('military')) {
+    return `saw that you're serving army, soldier strong`;
   }
   if (lowerTrait.includes('mba')) {
     return `saw your MBA, business leader`;
@@ -76,61 +199,76 @@ export const generateFirstTraitMessage = (trait: string): string => {
     return `saw your PhD, academic superstar`;
   }
   
-  // Fitness/Sports patterns
-  if (lowerTrait.includes('fitness') || lowerTrait.includes('gym')) {
-    return `saw that you're into fitness, power`;
-  }
-  if (lowerTrait.includes('bodybuilding')) {
-    return `saw your bodybuilding progress, beast mode`;
-  }
-  if (lowerTrait.includes('crossfit')) {
-    return `saw your crossfit training, warrior spirit`;
-  }
-  if (lowerTrait.includes('run')) {
-    return `saw that you're a runner, cardio king`;
-  }
-  if (lowerTrait.includes('swim')) {
-    return `saw that you're into swimming, aquatic ace`;
-  }
-  
-  // Style/Fashion patterns
+  // Fashion/Style Items (Very Common)
   if (lowerTrait.includes('jacket')) {
-    return `saw your stylish jacket, looking good`;
-  }
-  if (lowerTrait.includes('coat')) {
-    return `saw your awesome coat, winter ready`;
-  }
-  if (lowerTrait.includes('tshirt') || lowerTrait.includes('t-shirt') || (lowerTrait.includes('shirt') && !lowerTrait.includes('polo'))) {
-    return `saw that nice tshirt, good taste`;
+    return `saw your stylish jacket, fashion game strong`;
   }
   if (lowerTrait.includes('polo')) {
     return `saw that cool polo, fresh style`;
   }
+  if (lowerTrait.includes('tshirt') || lowerTrait.includes('t-shirt') || (lowerTrait.includes('shirt') && !lowerTrait.includes('polo'))) {
+    return `saw that nice tshirt, good taste`;
+  }
+  if (lowerTrait.includes('coat')) {
+    return `saw your awesome coat, winter ready`;
+  }
+  if (lowerTrait.includes('suit')) {
+    return `saw your elegant suit, classy vibes`;
+  }
+  if (lowerTrait.includes('hoodie')) {
+    return `saw that cool hoodie, streetwear king`;
+  }
   if (lowerTrait.includes('beanie')) {
-    return `saw that cute beanie, cozy vibes`;
+    return `saw that nice beanie, cozy style`;
   }
-  
-  // Other common patterns
-  if (lowerTrait.includes('travel') || lowerTrait.includes('trip')) {
-    return `saw your travel posts, wanderlust strong`;
+  if (lowerTrait.includes('sunglasses') || lowerTrait.includes('shades')) {
+    return `saw those cool shades, cool factor`;
   }
-  if (lowerTrait.includes('food') || lowerTrait.includes('eat')) {
-    return `saw that you're a foodie, good taste`;
+  if (lowerTrait.includes('glasses') || lowerTrait.includes('eyeglasses')) {
+    return `saw your stylish glasses, intellectual look`;
   }
-  if (lowerTrait.includes('photography') || lowerTrait.includes('photo')) {
-    return `saw your photography skills, impressive`;
+  if (lowerTrait.includes('watch')) {
+    return `saw that nice watch, timepiece game`;
   }
-  if (lowerTrait.includes('art') || lowerTrait.includes('paint')) {
-    return `saw your artistic talent, very creative`;
-  }
-  if (lowerTrait.includes('music') || lowerTrait.includes('sing') || lowerTrait.includes('play')) {
-    return `saw that you're into music, good taste`;
+  if (lowerTrait.includes('sneakers') || lowerTrait.includes('shoes')) {
+    return `saw those cool sneakers, shoe game fire`;
   }
   if (lowerTrait.includes('car')) {
-    return `saw your awesome car, shiok ride`;
+    return `saw your awesome ride, wheels on point`;
   }
-  if (lowerTrait.includes('fire') || lowerTrait.includes('rescue')) {
-    return `saw that you're in fire rescue, hero`;
+  
+  // Lifestyle/Personal
+  if (lowerTrait.includes('travel')) {
+    return `saw your travel adventures, wanderlust strong`;
+  }
+  if (lowerTrait.includes('food') || lowerTrait.includes('eat')) {
+    return `saw that you're a foodie, taste buds on point`;
+  }
+  if (lowerTrait.includes('adventure')) {
+    return `saw your adventure posts, thrill seeker`;
+  }
+  if (lowerTrait.includes('photo') && !lowerTrait.includes('photographer')) {
+    return `saw your photography skills, artistic vision`;
+  }
+  if (lowerTrait.includes('married')) {
+    return `saw that you got married, congratulations`;
+  }
+  if (lowerTrait.includes('cafe')) {
+    return `saw that you love cafes, coffee connoisseur`;
+  }
+  if (lowerTrait.includes('coffee')) {
+    return `saw your coffee obsession, caffeine king`;
+  }
+  
+  // Compound traits
+  if (lowerTrait.includes('married') && lowerTrait.includes('bab')) {
+    return `saw that you're married with babies, family man`;
+  }
+  if (lowerTrait.includes('powerlift') && lowerTrait.includes('athlete')) {
+    return `saw that you're a powerlifting athlete, strength champion`;
+  }
+  if (lowerTrait.includes('bodybuilding') && lowerTrait.includes('athlete')) {
+    return `saw that you're a bodybuilding athlete, muscle master`;
   }
   
   // Default response for unmatched traits
@@ -143,101 +281,137 @@ export const generateFirstTraitMessage = (trait: string): string => {
 export const generateSecondTraitMessage = (trait: string): string => {
   const lowerTrait = normalizeTraitText(trait);
   
-  // Travel patterns
-  if (lowerTrait.includes('travel') && lowerTrait.includes('fam')) {
-    return `How was traveling with the family`;
+  // Family/Relationships (Very Common)
+  if (lowerTrait.includes('has gf') || lowerTrait.includes('girlfriend')) {
+    return `How's things with the girlfriend`;
   }
-  if (lowerTrait.includes('travel') && lowerTrait.includes('solo')) {
-    return `How was your solo travel experience`;
+  if (lowerTrait.includes('has wife') || (lowerTrait.includes('wife') && !lowerTrait.includes('travel'))) {
+    return `How's married life treating you`;
   }
-  if (lowerTrait.includes('backpack')) {
-    return `How's the backpacking adventure going`;
+  if (lowerTrait.includes('travel') && lowerTrait.includes('wife')) {
+    return `How was traveling with the wife`;
   }
-  if (lowerTrait.includes('vacation')) {
-    return `How was your vacation`;
+  if (lowerTrait.includes('travel') && lowerTrait.includes('gf')) {
+    return `How was traveling with your girlfriend`;
   }
-  if (lowerTrait.includes('holiday')) {
-    return `How was your holiday break`;
+  if (lowerTrait.includes('has baby') || lowerTrait.includes('baby')) {
+    return `How's parenthood going`;
   }
-  if (lowerTrait.includes('travel')) {
+  if (lowerTrait.includes('kids') || lowerTrait.includes('children')) {
+    return `How are the kids doing`;
+  }
+  if (lowerTrait.includes('loves') && lowerTrait.includes('fam')) {
+    return `How's family time`;
+  }
+  if (lowerTrait.includes('adventure') && lowerTrait.includes('wife')) {
+    return `How was the adventure with your wife`;
+  }
+  if (lowerTrait.includes('got married') || lowerTrait.includes('married')) {
+    return `How's married life`;
+  }
+  if (lowerTrait.includes('engaged') || lowerTrait.includes('engagement')) {
+    return `How's the engagement going`;
+  }
+  if (lowerTrait.includes('travel') && lowerTrait.includes('fiancee')) {
+    return `How was traveling with your fiancee`;
+  }
+  
+  // Fitness/Sports (Common)
+  if (lowerTrait.includes('fitness')) {
+    return `How's your fitness journey going`;
+  }
+  if (lowerTrait.includes('athlete')) {
+    return `How's your athletic training`;
+  }
+  if (lowerTrait.includes('powerlift')) {
+    return `How's your powerlifting progress`;
+  }
+  if (lowerTrait.includes('bodybuilding')) {
+    return `How's your bodybuilding journey`;
+  }
+  if (lowerTrait.includes('swim')) {
+    return `How's your swimming training`;
+  }
+  if (lowerTrait.includes('cycling') || lowerTrait.includes('bike')) {
+    return `How's your cycling adventures`;
+  }
+  if (lowerTrait.includes('rock climbing') || lowerTrait.includes('climbing')) {
+    return `How's your climbing progress`;
+  }
+  if (lowerTrait.includes('muay thai')) {
+    return `How's your muay thai training`;
+  }
+  if (lowerTrait.includes('boxing')) {
+    return `How's your boxing training`;
+  }
+  if (lowerTrait.includes('run')) {
+    return `How's your running training`;
+  }
+  
+  // Travel/Adventure
+  if (lowerTrait.includes('travel') && !lowerTrait.includes('wife') && !lowerTrait.includes('gf') && !lowerTrait.includes('fiancee')) {
     return `How was your recent travels`;
   }
-  
-  // Work/Career patterns
-  if (lowerTrait.includes('promot') && lowerTrait.includes('work')) {
-    return `How's work promotion going`;
+  if (lowerTrait.includes('adventure') && !lowerTrait.includes('wife') && !lowerTrait.includes('friends')) {
+    return `How was your latest adventure`;
   }
-  if (lowerTrait.includes('side hustle')) {
-    return `How's your side hustle going`;
+  if (lowerTrait.includes('adventure') && lowerTrait.includes('friends')) {
+    return `How was the adventure with friends`;
   }
-  if (lowerTrait.includes('business')) {
-    return `How's business going`;
+  if (lowerTrait.includes('sky diving') || lowerTrait.includes('skydiving')) {
+    return `How was the sky diving experience`;
   }
-  if (lowerTrait.includes('new job')) {
-    return `How's the new job treating you`;
-  }
-  if (lowerTrait.includes('freelanc')) {
-    return `How's freelancing working out`;
+  if (lowerTrait.includes('jetski')) {
+    return `How was the jetski ride`;
   }
   
-  // Hobbies/Skills patterns
-  if (lowerTrait.includes('photo')) {
+  // Fashion/Style Items (as second trait)
+  if (lowerTrait.includes('glasses') || lowerTrait.includes('eyeglasses')) {
+    return `Where did you get those cool glasses`;
+  }
+  if (lowerTrait.includes('watch')) {
+    return `Where did you get that nice watch`;
+  }
+  if (lowerTrait.includes('jacket')) {
+    return `Where did you get that stylish jacket`;
+  }
+  if (lowerTrait.includes('sunglasses') || lowerTrait.includes('shades')) {
+    return `Where did you get those cool shades`;
+  }
+  if (lowerTrait.includes('hairstyle') || lowerTrait.includes('haircut')) {
+    return `Where did you get that fresh cut`;
+  }
+  if (lowerTrait.includes('polo')) {
+    return `Where did you get that cool polo`;
+  }
+  if (lowerTrait.includes('sneakers') || lowerTrait.includes('shoes')) {
+    return `Where did you get those awesome sneakers`;
+  }
+  
+  // Hobbies/Interests
+  if (lowerTrait.includes('photo') && !lowerTrait.includes('photographer')) {
     return `How's the photography going`;
   }
   if (lowerTrait.includes('music')) {
     return `How's your music coming along`;
   }
-  if (lowerTrait.includes('art')) {
-    return `How's your art progressing`;
+  if (lowerTrait.includes('party') || lowerTrait.includes('partying')) {
+    return `How was your recent party`;
   }
-  if (lowerTrait.includes('cook')) {
-    return `How's your cooking skills developing`;
+  if (lowerTrait.includes('coffee')) {
+    return `How's your coffee exploration`;
+  }
+  if (lowerTrait.includes('baking')) {
+    return `How's your baking skills progressing`;
+  }
+  if (lowerTrait.includes('anime')) {
+    return `What anime are you watching lately`;
   }
   if (lowerTrait.includes('gaming') || lowerTrait.includes('game')) {
-    return `How's your gaming setup treating you`;
+    return `How's your gaming setup`;
   }
-  
-  // Style/Fashion patterns
-  if (lowerTrait.includes('coat')) {
-    return `Where did you get that awesome coat`;
-  }
-  if (lowerTrait.includes('jacket')) {
-    return `Where did you get that stylish jacket`;
-  }
-  if (lowerTrait.includes('tshirt') || lowerTrait.includes('t-shirt') || (lowerTrait.includes('shirt') && !lowerTrait.includes('polo'))) {
-    return `Where did you get that nice tshirt`;
-  }
-  if (lowerTrait.includes('polo')) {
-    return `Where did you get that cool polo`;
-  }
-  if (lowerTrait.includes('beanie')) {
-    return `Where did you get that cute beanie`;
-  }
-  if (lowerTrait.includes('cap') || lowerTrait.includes('hat')) {
-    return `Where did you get that nice cap`;
-  }
-  
-  // Fitness/Sports patterns
-  if (lowerTrait.includes('fitness') || lowerTrait.includes('gym')) {
-    return `How's your fitness journey going`;
-  }
-  if (lowerTrait.includes('athlet')) {
-    return `How's your athletic training going`;
-  }
-  if (lowerTrait.includes('muay thai') || lowerTrait.includes('boxing')) {
-    return `How's your muay thai training going`;
-  }
-  if (lowerTrait.includes('run') || lowerTrait.includes('marathon')) {
-    return `How's your running training going`;
-  }
-  if (lowerTrait.includes('cycling') || lowerTrait.includes('bike')) {
-    return `How's your cycling going`;
-  }
-  if (lowerTrait.includes('swim')) {
-    return `How's your swimming training going`;
-  }
-  if (lowerTrait.includes('magic')) {
-    return `How's your magic skills progressing`;
+  if (lowerTrait.includes('collecting') && lowerTrait.includes('watch')) {
+    return `How's your watch collection growing`;
   }
   
   // Food patterns
@@ -301,42 +475,78 @@ const addSinglishModifiers = (message: string, section: string): string => {
     // Work/Professional patterns
     modifiedMessage = modifiedMessage
       .replace(/that's awesome$/i, "that's awesome sia")
-      .replace(/respect man$/i, "respect lah")
-      .replace(/hustling hard$/i, "hustling hard sia")
+      .replace(/entrepreneur vibes$/i, "entrepreneur vibes lah")
+      .replace(/entrepreneurial spirit$/i, "entrepreneurial spirit sia")
+      .replace(/tech genius$/i, "tech genius lah")
       .replace(/noble profession$/i, "noble profession lah")
-      .replace(/saving lives$/i, "saving lives sia")
+      .replace(/life saver$/i, "life saver sia")
       .replace(/healthcare hero$/i, "healthcare hero lah")
-      .replace(/smart cookie$/i, "smart sia")
-      .replace(/justice warrior$/i, "justice warrior lah")
+      .replace(/healing hands$/i, "healing hands sia")
+      .replace(/hero status$/i, "hero status lah")
+      .replace(/keeping us safe$/i, "keeping us safe sia")
       .replace(/culinary master$/i, "culinary master sia")
+      .replace(/style creator$/i, "style creator lah")
+      .replace(/music maestro$/i, "music maestro sia")
+      .replace(/artistic eye$/i, "artistic eye lah")
+      .replace(/sound creator$/i, "sound creator sia")
+      .replace(/creative genius$/i, "creative genius lah")
+      .replace(/money guru$/i, "money guru sia")
+      .replace(/business success$/i, "business success lah")
       
-      // Education patterns
-      .replace(/smart$/i, "smart sia")
+      // Education/Military patterns
+      .replace(/legal eagle$/i, "legal eagle sia")
       .replace(/impressive$/i, "impressive lah")
       .replace(/engineering pro$/i, "engineering pro sia")
-      .replace(/business leader$/i, "business leader lah")
-      .replace(/academic superstar$/i, "academic superstar sia")
+      .replace(/knowledge seeker$/i, "knowledge seeker lah")
+      .replace(/fresh start$/i, "fresh start sia")
+      .replace(/soldier strong$/i, "soldier strong lah")
+      .replace(/business leader$/i, "business leader sia")
+      .replace(/academic superstar$/i, "academic superstar lah")
       
       // Fitness/Sports patterns
       .replace(/power$/i, "power lah")
       .replace(/beast mode$/i, "beast mode lah")
-      .replace(/warrior spirit$/i, "warrior spirit sia")
-      .replace(/cardio king$/i, "cardio king lah")
-      .replace(/aquatic ace$/i, "aquatic ace sia")
+      .replace(/strength king$/i, "strength king sia")
+      .replace(/aquatic ace$/i, "aquatic ace lah")
+      .replace(/sports warrior$/i, "sports warrior sia")
+      .replace(/fighter spirit$/i, "fighter spirit lah")
+      .replace(/pedal power$/i, "pedal power sia")
+      .replace(/scaling heights$/i, "scaling heights lah")
+      .replace(/cardio king$/i, "cardio king sia")
+      .replace(/martial arts master$/i, "martial arts master lah")
+      .replace(/sword master$/i, "sword master sia")
+      .replace(/water warrior$/i, "water warrior lah")
+      .replace(/wave rider$/i, "wave rider sia")
+      .replace(/strike master$/i, "strike master lah")
+      .replace(/underwater explorer$/i, "underwater explorer sia")
+      .replace(/strength champion$/i, "strength champion lah")
+      .replace(/muscle master$/i, "muscle master sia")
       
-      // Style/Fashion patterns
-      .replace(/looking good$/i, "looking good lah")
-      .replace(/winter ready$/i, "winter ready sia")
-      .replace(/good taste$/i, "good taste lah")
+      // Fashion/Style patterns
+      .replace(/fashion game strong$/i, "fashion game strong lah")
       .replace(/fresh style$/i, "fresh style sia")
-      .replace(/cozy vibes$/i, "cozy vibes lah")
+      .replace(/good taste$/i, "good taste lah")
+      .replace(/winter ready$/i, "winter ready sia")
+      .replace(/classy vibes$/i, "classy vibes lah")
+      .replace(/streetwear king$/i, "streetwear king sia")
+      .replace(/cozy style$/i, "cozy style lah")
+      .replace(/cool factor$/i, "cool factor sia")
+      .replace(/intellectual look$/i, "intellectual look lah")
+      .replace(/timepiece game$/i, "timepiece game sia")
+      .replace(/shoe game fire$/i, "shoe game fire lah")
+      .replace(/wheels on point$/i, "wheels on point sia")
       
-      // Other patterns
+      // Lifestyle/Personal patterns
       .replace(/wanderlust strong$/i, "wanderlust strong sia")
-      .replace(/impressive$/i, "impressive sia")
-      .replace(/very creative$/i, "very creative lah")
-      .replace(/shiok ride$/i, "shiok ride lah")
-      .replace(/hero$/i, "hero sia")
+      .replace(/taste buds on point$/i, "taste buds on point lah")
+      .replace(/thrill seeker$/i, "thrill seeker sia")
+      .replace(/artistic vision$/i, "artistic vision lah")
+      .replace(/congratulations$/i, "congratulations lah")
+      .replace(/coffee connoisseur$/i, "coffee connoisseur sia")
+      .replace(/caffeine king$/i, "caffeine king lah")
+      .replace(/family man$/i, "family man sia")
+      
+      // Default pattern
       .replace(/love it haha$/i, "sibei nice leh");
   } else if (section === 'ps') {
     // Add question particles for PS section
@@ -348,6 +558,9 @@ const addSinglishModifiers = (message: string, section: string): string => {
     }
     if (modifiedMessage.startsWith("Found")) {
       modifiedMessage = modifiedMessage + " or not";
+    }
+    if (modifiedMessage.startsWith("What")) {
+      modifiedMessage = modifiedMessage + " ah";
     }
   } else if (section === 'intro') {
     modifiedMessage = modifiedMessage
@@ -438,8 +651,8 @@ export const parseInputForTemplate = (input: string): { name: string; traits: Tr
   const name = lines[0].trim();
   const traitsLine = lines[1].trim();
   
-  // Split traits by '/' if available
-  const traitParts = traitsLine.split('/').map(t => t.trim());
+  // Split traits by ' / ' (space-slash-space) if available, preserving parentheses content
+  const traitParts = traitsLine.split(' / ').map(t => t.trim());
   
   return {
     name,

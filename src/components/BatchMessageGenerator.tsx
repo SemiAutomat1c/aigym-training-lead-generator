@@ -66,22 +66,22 @@ const BatchMessageGenerator: React.FC = () => {
           
           // Handle different formats
           if (blockLines.length >= 3) {
-            // Three-line format: name, interests, additional info
-            const interests = blockLines[1].trim();
-            const additionalInfo = blockLines[2].trim();
+            // Three-line format: name, trait1, trait2
+            const trait1 = blockLines[1].trim();
+            const trait2 = blockLines[2].trim();
             
             if (name) {
               leads.push({
                 name,
-                interests: additionalInfo ? `${interests} / ${additionalInfo}` : interests
+                interests: `${trait1} / ${trait2}`
               });
             }
           } else if (blockLines.length >= 2) {
-            // Two-line format: name, interests
-            const interests = blockLines[1].trim();
+            // Two-line format: name, traits (may already contain " / ")
+            const traits = blockLines[1].trim();
             
             if (name) {
-              leads.push({ name, interests });
+              leads.push({ name, interests: traits });
             }
           } else {
             // Just name
@@ -248,18 +248,17 @@ const BatchMessageGenerator: React.FC = () => {
                     rows={10}
                     value={batchInput}
                     onChange={(e) => setBatchInput(e.target.value)}
-                    placeholder={`Format 1 (tab-separated):\nDrake\tPhotography/Gaming\tbased on profile pic, likes to travel\nAlex Ng\tRunning Sports\tBased on profile pic, likes to do a marathon\n\nFormat 2 (three lines per lead):\nDrake\nPhotography/Gaming\nbased on profile pic, likes to travel\n\nAlex Ng\nRunning Sports\nBased on profile pic, likes to do a marathon`}
-                    isInvalid={isOverLimit}
+                    placeholder="Name&#10;trait1 / trait2&#10;&#10;Name&#10;trait1 / trait2"
                   />
-                  <Form.Text className={isOverLimit ? "text-danger" : "text-muted"}>
-                    {isOverLimit ? 
-                      `Too many profiles (${leadCount}). Maximum allowed is ${MAX_PROFILES} for quality purposes.` : 
-                      `Two formats accepted:
-                      1. Tab-separated format: Name[tab]Interests[tab]Additional Info
-                      2. Three lines per lead: Name, Interests, Additional Info (each on a separate line)
-                      
-                      Multiple interests can be separated with "/" (e.g., Photography/Gaming)`
-                    }
+                  <Form.Text className="text-muted">
+                    Format options:
+                    <ul className="mt-1">
+                      <li>One lead per block (separated by empty lines)</li>
+                      <li>First line: Name</li>
+                      <li>Second line: Traits separated by " / " (space-slash-space)</li>
+                      <li>Example: "Henry&#10;works at (ig/mindmusclesg) / traveling with fam"</li>
+                      <li>Or tab-separated format: "Name[tab]trait1 / trait2"</li>
+                    </ul>
                   </Form.Text>
                 </Form.Group>
               </Card.Body>
@@ -276,10 +275,10 @@ const BatchMessageGenerator: React.FC = () => {
                     value={tone}
                     onChange={(e) => setTone(e.target.value)}
                   >
-                    <option value="level0">Level 0 - Normal (no Singaporean english)</option>
-                    <option value="level2">Level 2 - BTW phrase is only Singaporean english</option>
-                    <option value="level3">Level 3 - BTW and PS part is Singaporean english</option>
-                    <option value="level4">Level 4 - Entire message template except the services offered are Singaporean english</option>
+                    <option value="level0">Level 0 - Normal</option>
+                    <option value="level2">Level 2 - BTW Singlish</option>
+                    <option value="level3">Level 3 - BTW & PS Singlish</option>
+                    <option value="level4">Level 4 - Full Singlish</option>
                   </Form.Select>
                 </Form.Group>
                 
@@ -289,31 +288,23 @@ const BatchMessageGenerator: React.FC = () => {
                     value={template}
                     onChange={(e) => setTemplate(e.target.value)}
                   >
-                    <option value="company">Company Account Template</option>
-                    <option value="followup">Normal Follow up Template</option>
+                    <option value="company">Company Account</option>
+                    <option value="followup">Normal Follow-up</option>
                   </Form.Select>
                 </Form.Group>
               </Card.Body>
             </Card>
             
-            <div className="d-grid">
+            <div className="d-grid gap-2">
               <Button 
                 variant="primary" 
                 type="submit" 
-                size="lg"
-                disabled={isLoading || isOverLimit || leadCount === 0}
+                disabled={isLoading || leadCount === 0 || isOverLimit}
               >
                 {isLoading ? (
                   <>
-                    <Spinner
-                      as="span"
-                      animation="border"
-                      size="sm"
-                      role="status"
-                      aria-hidden="true"
-                      className="me-2"
-                    />
-                    Generating {progress.current}/{progress.total}...
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                    Generating ({progress.current}/{progress.total})
                   </>
                 ) : 'Generate Batch Messages'}
               </Button>
@@ -325,121 +316,65 @@ const BatchMessageGenerator: React.FC = () => {
       {batchMessages.length > 0 && (
         <Card className="mt-4">
           <Card.Header className="d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">Generated Messages ({batchMessages.filter(m => m.isGenerated).length}/{batchMessages.length})</h5>
+            <span>Generated Messages</span>
             <div>
               <Button 
-                variant="outline-primary" 
-                size="sm"
+                variant="outline-secondary" 
+                size="sm" 
                 className="me-2"
                 onClick={copyAllToClipboard}
-                disabled={batchMessages.filter(m => m.isGenerated).length === 0}
+                disabled={!batchMessages.some(msg => msg.isGenerated)}
               >
                 Copy All
               </Button>
               <Button 
-                variant="outline-success" 
+                variant="outline-primary" 
                 size="sm"
                 onClick={exportMessages}
-                disabled={batchMessages.filter(m => m.isGenerated).length === 0}
+                disabled={!batchMessages.some(msg => msg.isGenerated)}
               >
-                Export to File
+                Export All
               </Button>
             </div>
           </Card.Header>
           <Card.Body>
-            <Table striped bordered hover responsive>
+            <Table responsive>
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Interests</th>
-                  <th>Status</th>
+                  <th>Traits</th>
+                  <th>Message</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {batchMessages.map((item, index) => (
-                  <tr key={index}>
+                  <tr key={index} className={item.isError ? 'table-danger' : ''}>
                     <td>{index + 1}</td>
                     <td>{item.lead.name}</td>
                     <td>{item.lead.interests}</td>
                     <td>
-                      {item.isError ? (
-                        <span className="text-danger">Error</span>
-                      ) : item.isGenerated ? (
-                        <span className="text-success">Generated</span>
+                      {item.isGenerated ? (
+                        <div style={{ maxHeight: '150px', overflow: 'auto' }}>
+                          <pre style={{ whiteSpace: 'pre-wrap' }}>{item.message}</pre>
+                        </div>
+                      ) : item.isError ? (
+                        <span className="text-danger">Failed to generate</span>
                       ) : (
-                        <span className="text-muted">Pending</span>
+                        <span className="text-muted">Pending...</span>
                       )}
                     </td>
                     <td>
-                      <Button
-                        variant="link"
-                        size="sm"
-                        onClick={() => {
-                          navigator.clipboard.writeText(item.message);
-                          alert(`Message for ${item.lead.name} copied to clipboard!`);
-                        }}
-                        disabled={!item.isGenerated}
-                      >
-                        Copy
-                      </Button>
-                      <Button
-                        variant="link"
-                        size="sm"
-                        onClick={() => {
-                          const modal = document.createElement('div');
-                          modal.style.position = 'fixed';
-                          modal.style.top = '0';
-                          modal.style.left = '0';
-                          modal.style.width = '100%';
-                          modal.style.height = '100%';
-                          modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                          modal.style.display = 'flex';
-                          modal.style.alignItems = 'center';
-                          modal.style.justifyContent = 'center';
-                          modal.style.zIndex = '1000';
-                          
-                          const content = document.createElement('div');
-                          content.style.backgroundColor = 'white';
-                          content.style.padding = '20px';
-                          content.style.borderRadius = '5px';
-                          content.style.maxWidth = '80%';
-                          content.style.maxHeight = '80%';
-                          content.style.overflow = 'auto';
-                          
-                          const header = document.createElement('div');
-                          header.style.display = 'flex';
-                          header.style.justifyContent = 'space-between';
-                          header.style.marginBottom = '10px';
-                          
-                          const title = document.createElement('h4');
-                          title.textContent = `Message for ${item.lead.name}`;
-                          
-                          const closeBtn = document.createElement('button');
-                          closeBtn.textContent = '×';
-                          closeBtn.style.background = 'none';
-                          closeBtn.style.border = 'none';
-                          closeBtn.style.fontSize = '24px';
-                          closeBtn.style.cursor = 'pointer';
-                          closeBtn.onclick = () => document.body.removeChild(modal);
-                          
-                          const messageText = document.createElement('pre');
-                          messageText.style.whiteSpace = 'pre-wrap';
-                          messageText.style.wordBreak = 'break-word';
-                          messageText.textContent = item.message;
-                          
-                          header.appendChild(title);
-                          header.appendChild(closeBtn);
-                          content.appendChild(header);
-                          content.appendChild(messageText);
-                          modal.appendChild(content);
-                          document.body.appendChild(modal);
-                        }}
-                        disabled={!item.isGenerated}
-                      >
-                        View
-                      </Button>
+                      {item.isGenerated && (
+                        <Button 
+                          variant="outline-secondary" 
+                          size="sm"
+                          onClick={() => navigator.clipboard.writeText(item.message)}
+                        >
+                          Copy
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}

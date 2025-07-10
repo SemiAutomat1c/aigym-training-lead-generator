@@ -34,15 +34,20 @@ export const generateMessage = async (request: MessageRequest): Promise<string> 
 const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
   const { name, interests } = leadInfo;
   
-  // Use the new template generator
-  const parsedInput = `${name}\n${interests}`;
+  // Pass the raw input to the template parser to preserve parentheses content
+  const parsedInput = `${name}\n${interests || ''}`;
   const { name: parsedName, traits } = parseInputForTemplate(parsedInput);
   
   return generateTemplateMessage(parsedName, traits, tone);
 };
 
 const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
-  const { name } = leadInfo;
+  const { name, interests } = leadInfo;
+  
+  // Parse interests for personalization in follow-up message
+  // Preserve parentheses content for proper parsing
+  const parsedInput = `${name}\n${interests || ''}`;
+  const { traits } = parseInputForTemplate(parsedInput);
   
   // Base message template
   let message = `Hey ${name}, Bob here, i'm not too sure if my friend Jet has reached out to you yet, @_muscle.baby_\n`;
@@ -56,16 +61,32 @@ const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
   message += `✅ To make more progress with Less Time and Effort\n\n`;
   message += `To push them in the right direction this year 💪🏻\n`;
   message += `Would you be opposed to taking a slot for yourself?\n\n`;
-  message += `P.S. How's your gym progress going? : )`;
+  
+  // Generate personalized PS based on interests if available
+  let psMessage = "P.S. How's your gym progress going?";
+  if (interests && interests.trim()) {
+    // Use the second trait for PS personalization if available
+    if (traits.secondTrait && traits.secondTrait.trim()) {
+      const { generateSecondTraitMessage, applyToneModifiers } = require('./messageTemplates');
+      const personalizedPs = generateSecondTraitMessage(traits.secondTrait);
+      psMessage = `P.S. ${personalizedPs}?`;
+      
+      // Apply tone modifiers to PS section
+      if (tone === 'level3' || tone === 'level4') {
+        psMessage = applyToneModifiers(psMessage, 'ps', tone);
+      }
+    }
+  }
+  
+  message += psMessage + " : )";
 
   // Apply Singlish based on tone level
   if (tone === 'level2') {
     // Only BTW phrase is Singlish (no BTW in follow-up template)
     // No changes needed
   } else if (tone === 'level3') {
-    // PS part is Singlish
-    message = message.replace("P.S. How's your gym progress going?", "P.S. How's your gym progress ah?")
-                    .replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?');
+    // PS part is Singlish (already handled above)
+    message = message.replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?');
   } else if (tone === 'level4') {
     // Full Singlish except services offered
     message = message.replace('Bob here,', 'Bob here lah,')
@@ -73,8 +94,7 @@ const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
                     .replace('but we are hosting', 'but we got')
                     .replace('can join us', 'can join with us')
                     .replace('To push them in the right direction this year', 'Help them level up this year')
-                    .replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?')
-                    .replace("P.S. How's your gym progress going?", "P.S. How's your gym progress ah?");
+                    .replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?');
   }
 
   return message;
