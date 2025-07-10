@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { generateTemplateMessage, parseInputForTemplate } from './messageTemplates';
 
 interface LeadInfo {
@@ -62,7 +61,7 @@ const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
   // Apply Singlish based on tone level
   if (tone === 'level2') {
     // Only BTW phrase is Singlish (no BTW in follow-up template)
-    message = message;
+    // No changes needed
   } else if (tone === 'level3') {
     // PS part is Singlish
     message = message.replace("P.S. How's your gym progress going?", "P.S. How's your gym progress ah?")

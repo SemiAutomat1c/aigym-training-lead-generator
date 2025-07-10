@@ -108,43 +108,6 @@ const Formatter: React.FC = () => {
     setSuccess(null);
   };
 
-  // Function to normalize interests for better display
-  const normalizeInterests = () => {
-    try {
-      if (!inputData.trim()) {
-        setError('Please enter some data to normalize');
-        return;
-      }
-      
-      const parsedLeads = parseRawData(inputData);
-      
-      if (parsedLeads.length === 0) {
-        setError('No valid leads found. Please check your input format.');
-        return;
-      }
-      
-      // Process each lead to normalize interests
-      const normalizedLeads = parsedLeads.map(lead => {
-        return {
-          ...lead,
-          // Keep the original format with "/" separators
-          interests: lead.interests
-        };
-      });
-      
-      // Format as three lines per lead
-      const formattedOutput = normalizedLeads.map(lead => 
-        `${lead.name}\n${lead.interests}\n${lead.additionalInfo}`
-      ).join('\n\n');
-      
-      setOutputData(formattedOutput);
-      setSuccess(`Successfully normalized ${parsedLeads.length} leads!`);
-    } catch (err) {
-      console.error('Error normalizing data:', err);
-      setError('Failed to normalize data. Please check your input format.');
-    }
-  };
-
   return (
     <Container>
       <h1 className="mb-4">Lead Data Formatter</h1>
