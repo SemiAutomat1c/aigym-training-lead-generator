@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/App.css';
 import Header from './components/Header';
 import Home from './components/Home';
-import MessageGenerator from './components/MessageGenerator';
 import BatchMessageGenerator from './components/BatchMessageGenerator';
 import AboutPage from './components/AboutPage';
 import Formatter from './components/Formatter';
@@ -21,7 +20,6 @@ const App: React.FC = () => {
       <main className="container">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/generate" element={<MessageGenerator />} />
           <Route path="/batch" element={<BatchMessageGenerator />} />
           <Route path="/formatter" element={<Formatter />} />
           <Route path="/about" element={<AboutPage />} />

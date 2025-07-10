@@ -28,20 +28,12 @@ const Home: React.FC = () => {
         </p>
         <div className="d-flex justify-content-center gap-3 flex-wrap">
           <LinkButton 
-          to="/generate" 
+          to="/batch" 
           variant="primary" 
           size="lg" 
           className="px-5 py-3"
         >
-          Start Generating Messages
-          </LinkButton>
-          <LinkButton 
-            to="/batch" 
-            variant="outline-primary" 
-            size="lg" 
-            className="px-5 py-3"
-          >
-            Batch Message Generator <Badge bg="danger">NEW!</Badge>
+          Generate Messages
           </LinkButton>
           <LinkButton 
             to="/formatter" 
@@ -63,7 +55,7 @@ const Home: React.FC = () => {
               <Card.Title>Input Lead Information</Card.Title>
               <Card.Text>
                 Enter details about your lead, including their name and interests you've noticed from their profile.
-                Support for both single leads and batch processing of up to 200 profiles.
+                Support for batch processing of up to 200 profiles.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -104,7 +96,6 @@ const Home: React.FC = () => {
                 <li><strong>Easy data input</strong> - Simple copy-paste of names and traits</li>
                 <li><strong>Singlish support</strong> - Authentic Singaporean English phrases</li>
                 <li><strong>Personalized messaging</strong> - Unique variations for each interest type</li>
-                <li><strong>Multiple platforms</strong> - Instagram and TikTok templates</li>
                 <li><strong>Perfect template matching</strong> - Follows the exact required format</li>
                 <li><strong>Lead data formatter</strong> - Clean and format your lead data</li>
               </ul>
@@ -133,22 +124,15 @@ const Home: React.FC = () => {
         <h2>Ready to Grow Your Gym Training Business?</h2>
         <p className="lead mb-4">
           Start creating personalized messages that convert fitness enthusiasts into clients.
-          Process up to 200 leads at once with our new batch generator!
+          Process up to 200 leads at once with our batch generator!
         </p>
         <div className="d-flex justify-content-center gap-3 flex-wrap">
           <LinkButton 
-          to="/generate" 
+          to="/batch" 
           variant="primary" 
           size="lg"
         >
-            Single Message
-          </LinkButton>
-          <LinkButton 
-            to="/batch" 
-            variant="success" 
-            size="lg"
-          >
-            Batch Generator
+            Message Generator
           </LinkButton>
           <LinkButton 
             to="/formatter" 

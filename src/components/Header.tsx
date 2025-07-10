@@ -42,12 +42,6 @@ const Header: React.FC = () => {
               Home
             </NavLinkRouter>
             <NavLinkRouter 
-              to="/generate" 
-              active={location.pathname === '/generate'}
-            >
-              Generate Messages
-            </NavLinkRouter>
-            <NavLinkRouter 
               to="/batch" 
               active={location.pathname === '/batch'}
             >
