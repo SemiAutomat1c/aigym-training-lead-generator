@@ -24,81 +24,55 @@ const BatchMessageGenerator: React.FC = () => {
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const MAX_PROFILES = 200; // Maximum number of profiles as per client requirements
 
-  // Parse the batch input into an array of leads
+  // Parse the batch input into an array of leads - simplified version
   const parseLeads = (input: string): Lead[] => {
     const lines = input.trim().split('\n');
     const leads: Lead[] = [];
     
-    // Check if the input might be tab-separated
-    const tabSeparatedFormat = lines.some(line => line.includes('\t'));
-    
-    if (tabSeparatedFormat) {
-      // Process tab-separated format
-      for (const line of lines) {
-        const trimmedLine = line.trim();
-        if (!trimmedLine) continue; // Skip empty lines
-        
-        const parts = trimmedLine.split('\t');
-        if (parts.length >= 2) {
-          const name = parts[0].trim();
-          const interests = parts[1].trim();
-          // Additional info is now incorporated into interests if present
-          const additionalInfo = parts[2]?.trim() || '';
-          
-          if (name) {
-            leads.push({
-              name,
-              interests: additionalInfo ? `${interests} / ${additionalInfo}` : interests
-            });
-          }
-        }
+    // Process as name followed by interests with slash format
+    let i = 0;
+    while (i < lines.length) {
+      const currentLine = lines[i].trim();
+      
+      // Skip empty lines
+      if (!currentLine) {
+        i++;
+        continue;
       }
-    } else {
-      // First, try to process as name followed by interests with slash format
-      let i = 0;
-      while (i < lines.length) {
-        const currentLine = lines[i].trim();
+      
+      // This is a name line
+      const name = currentLine;
+      
+      // Check if the next line exists and contains interests
+      if (i + 1 < lines.length) {
+        const interestsLine = lines[i + 1].trim();
         
-        // Skip empty lines
-        if (!currentLine) {
-          i++;
-          continue;
-        }
-        
-        // Check if this is a name line
-        const name = currentLine;
-        
-        // Check if the next line exists and contains interests
-        if (i + 1 < lines.length) {
-          const interestsLine = lines[i + 1].trim();
+        if (interestsLine && name) {
+          leads.push({
+            name,
+            interests: interestsLine
+          });
           
-          if (interestsLine && name) {
-            leads.push({
-              name,
-              interests: interestsLine
-            });
-            
-            // Move to the line after the interests
-            i += 2;
-            
-            // Skip any empty lines between entries
-            while (i < lines.length && !lines[i].trim()) {
-              i++;
-            }
-          } else {
-            // If the next line is empty, just move to the next line
+          // Move to the line after the interests
+          i += 2;
+          
+          // Skip any empty lines between entries
+          while (i < lines.length && !lines[i].trim()) {
             i++;
           }
         } else {
-          // If there's no next line, just add the name
-          if (name) {
-            leads.push({
-              name,
-              interests: ''
-            });
-          }
+          // If the next line is empty, just move to the next line
           i++;
         }
+      } else {
+        // If there's no next line, just add the name
+        if (name) {
+          leads.push({
+            name,
+            interests: ''
+          });
+        }
+        i++;
       }
     }
     
@@ -170,7 +144,7 @@ const BatchMessageGenerator: React.FC = () => {
           });
           
           // Add a small delay to avoid overwhelming the system
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 100));
         } catch (err) {
           // Handle error for this specific message
           setBatchMessages(prev => {
@@ -223,6 +197,16 @@ const BatchMessageGenerator: React.FC = () => {
       .catch(err => {
         console.error('Failed to copy messages:', err);
       });
+  };
+
+  // View message in a new tab
+  const viewMessage = (message: string) => {
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.document.write(`<pre>${message}</pre>`);
+    } else {
+      alert('Pop-up blocked. Please allow pop-ups to view the message.');
+    }
   };
 
   // Calculate the number of leads from the current input
@@ -392,55 +376,7 @@ const BatchMessageGenerator: React.FC = () => {
                       <Button
                         variant="link"
                         size="sm"
-                        onClick={() => {
-                          const modal = document.createElement('div');
-                          modal.style.position = 'fixed';
-                          modal.style.top = '0';
-                          modal.style.left = '0';
-                          modal.style.width = '100%';
-                          modal.style.height = '100%';
-                          modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                          modal.style.display = 'flex';
-                          modal.style.alignItems = 'center';
-                          modal.style.justifyContent = 'center';
-                          modal.style.zIndex = '1000';
-                          
-                          const content = document.createElement('div');
-                          content.style.backgroundColor = 'white';
-                          content.style.padding = '20px';
-                          content.style.borderRadius = '5px';
-                          content.style.maxWidth = '80%';
-                          content.style.maxHeight = '80%';
-                          content.style.overflow = 'auto';
-                          
-                          const header = document.createElement('div');
-                          header.style.display = 'flex';
-                          header.style.justifyContent = 'space-between';
-                          header.style.marginBottom = '10px';
-                          
-                          const title = document.createElement('h4');
-                          title.textContent = `Message for ${item.lead.name}`;
-                          
-                          const closeBtn = document.createElement('button');
-                          closeBtn.textContent = '×';
-                          closeBtn.style.background = 'none';
-                          closeBtn.style.border = 'none';
-                          closeBtn.style.fontSize = '24px';
-                          closeBtn.style.cursor = 'pointer';
-                          closeBtn.onclick = () => document.body.removeChild(modal);
-                          
-                          const messageText = document.createElement('pre');
-                          messageText.style.whiteSpace = 'pre-wrap';
-                          messageText.style.wordBreak = 'break-word';
-                          messageText.textContent = item.message;
-                          
-                          header.appendChild(title);
-                          header.appendChild(closeBtn);
-                          content.appendChild(header);
-                          content.appendChild(messageText);
-                          modal.appendChild(content);
-                          document.body.appendChild(modal);
-                        }}
+                        onClick={() => viewMessage(item.message)}
                         disabled={!item.isGenerated}
                       >
                         View

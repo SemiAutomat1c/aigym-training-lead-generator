@@ -49,8 +49,7 @@ const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
   
   // Add personalized message based on first trait
   if (firstTrait) {
-    let personalizedBTW = getPersonalizedBTWMessage(firstTrait);
-    message += `BTW, ${personalizedBTW}\n\n`;
+    message += `BTW, ${getPersonalizedBTW(firstTrait)}\n\n`;
   }
   
   // Add the standard offer section
@@ -67,8 +66,7 @@ const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
   
   // Add personalized PS based on second trait
   if (secondTrait) {
-    let personalizedPS = getPersonalizedPSMessage(secondTrait);
-    message += `PS: ${personalizedPS}`;
+    message += `PS: ${getPersonalizedPS(secondTrait)}`;
   } else {
     message += `PS: How's your gym progress going? : )`;
   }
@@ -77,12 +75,12 @@ const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
   if (tone === 'level2') {
     // Only BTW phrase is Singlish
     message = message.replace('BTW,', 'Eh sia,')
-                    .replace(/love it haha|power lah! Keep it up!|that's cool sia!/g, 'sibei nice leh')
+                    .replace('love it haha', 'sibei nice leh')
                     .replace('👍', 'sia 👍');
   } else if (tone === 'level3') {
     // BTW and PS parts are Singlish
     message = message.replace('BTW,', 'Eh sia,')
-                    .replace(/love it haha|power lah! Keep it up!|that's cool sia!/g, 'sibei nice leh')
+                    .replace('love it haha', 'sibei nice leh')
                     .replace('👍', 'sia 👍')
                     .replace(/PS: How's your gym progress going\?/g, "PS: How's your gym progress ah?")
                     .replace(/PS: How's (.+?) going\?/g, "PS: How's $1 going ah?")
@@ -93,7 +91,7 @@ const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
     message = message.replace('Jet here btw,', 'Jet here lah,')
                     .replace('keep it up in the gym btw : )', 'keep it up in the gym ah! : )')
                     .replace('BTW,', 'Eh sia,')
-                    .replace(/love it haha|power lah! Keep it up!|that's cool sia!/g, 'sibei nice leh')
+                    .replace('love it haha', 'sibei nice leh')
                     .replace('👍', 'sia 👍')
                     .replace('I am currently looking for', 'I currently looking for')
                     .replace('can join', 'can join in')
@@ -107,70 +105,40 @@ const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
   return message;
 };
 
-// Helper function to generate personalized BTW message based on first trait
-const getPersonalizedBTWMessage = (trait: string): string => {
+// Simplified personalized BTW message function
+function getPersonalizedBTW(trait: string): string {
   trait = trait.toLowerCase();
   
-  // Work-related traits
-  if (trait.includes('work') || trait.includes('job') || trait.includes('career') || trait.includes('at ')) {
-    return `saw that you ${trait}, that's awesome! Keep up the great work! 👍`;
+  // Work/profession related
+  if (trait.includes('work') || trait.includes('job') || trait.includes('at ')) {
+    return `saw that you ${trait}, that's awesome! 👍`;
   }
   
-  // Profession-related traits
-  if (trait.includes('teacher') || trait.includes('professor')) {
-    return `noticed you're a ${trait}, must be rewarding shaping young minds! 👍`;
+  // Education
+  if (trait.includes('stud') || trait.includes('law') || trait.includes('university') || trait.includes('smu')) {
+    return `saw that you ${trait}, that's impressive! 👍`;
   }
   
-  if (trait.includes('engineer')) {
-    return `saw you're an ${trait}, that's impressive! 👍`;
-  }
-  
-  if (trait.includes('designer') || trait.includes('design')) {
-    return `noticed you're into ${trait}, your creative eye must be useful in other areas too! 👍`;
-  }
-  
-  if (trait.includes('agent') || trait.includes('estate')) {
-    return `saw you're a ${trait}, must be exciting helping people find their dream homes! 👍`;
-  }
-  
-  if (trait.includes('health') || trait.includes('doctor') || trait.includes('nurse')) {
-    return `noticed you work in ${trait}, respect for the important work you do! 👍`;
-  }
-  
-  // Education-related traits
-  if (trait.includes('stud') || trait.includes('law') || trait.includes('smu') || trait.includes('university')) {
-    return `saw that you ${trait}, that's impressive! Keep crushing those studies! 👍`;
-  }
-  
-  // Fitness-related traits
-  if (trait.includes('fitness') || trait.includes('gym') || trait.includes('workout')) {
+  // Fitness
+  if (trait.includes('fitness') || trait.includes('gym') || trait.includes('workout') || 
+      trait.includes('swimming') || trait.includes('athlete')) {
     return `noticed you're into ${trait}, love seeing the dedication! 👍`;
   }
   
-  if (trait.includes('swimming') || trait.includes('athlete')) {
-    return `saw you're into ${trait}, that's awesome! Great for overall fitness! 👍`;
-  }
-  
-  // Style-related traits
-  if (trait.includes('jacket') || trait.includes('shirt') || trait.includes('tshirt') || trait.includes('beanie') || trait.includes('cap') || trait.includes('coat')) {
+  // Style
+  if (trait.includes('jacket') || trait.includes('shirt') || trait.includes('tshirt') || 
+      trait.includes('style') || trait.includes('fashion') || trait.includes('hair') || 
+      trait.includes('cap') || trait.includes('coat') || trait.includes('beanie')) {
     return `noticed your ${trait}, looking good! 👍`;
   }
   
-  if (trait.includes('stylish') || trait.includes('style') || trait.includes('fashion')) {
-    return `saw your ${trait}, great taste! 👍`;
-  }
-  
-  if (trait.includes('hair') || trait.includes('unique')) {
-    return `noticed your ${trait}, looks great! 👍`;
-  }
-  
-  // Hobby-related traits
+  // Hobbies
   if (trait.includes('photography') || trait.includes('photo')) {
-    return `saw you're into ${trait}, you must have a great eye for detail! 👍`;
+    return `saw you're into ${trait}, you must have a great eye! 👍`;
   }
   
   if (trait.includes('travel')) {
-    return `noticed you're into ${trait}, always great to explore new places! 👍`;
+    return `noticed you're into ${trait}, always great to explore! 👍`;
   }
   
   if (trait.includes('adventure')) {
@@ -181,80 +149,46 @@ const getPersonalizedBTWMessage = (trait: string): string => {
     return `noticed you're a ${trait}, good food is one of life's best pleasures! 👍`;
   }
   
-  if (trait.includes('magic') || trait.includes('magician')) {
-    return `saw you're ${trait.includes('a') ? '' : 'a '}${trait}, that's so cool! 👍`;
-  }
-  
-  if (trait.includes('muay thai') || trait.includes('martial art')) {
-    return `noticed you do ${trait}, that's awesome! Great for fitness and discipline! 👍`;
-  }
-  
-  if (trait.includes('fire') || trait.includes('rescue')) {
-    return `saw you work in ${trait}, much respect for what you do! 👍`;
-  }
-  
-  if (trait.includes('car') || trait.includes('vehicle')) {
-    return `noticed your awesome ${trait}, that's a sweet ride! 👍`;
-  }
-  
-  // Default response if no specific pattern matches
+  // Default
   return `${trait} love it haha 👍`;
-};
+}
 
-// Helper function to generate personalized PS message based on second trait
-const getPersonalizedPSMessage = (trait: string): string => {
+// Simplified personalized PS message function
+function getPersonalizedPS(trait: string): string {
   trait = trait.toLowerCase();
   
-  // Travel-related traits
   if (trait.includes('travel')) {
-    if (trait.includes('fam')) {
-      return `How was the travel with family? : )`;
-    }
     return `How were your travels recently? : )`;
   }
   
-  // Fitness-related traits
   if (trait.includes('fitness') || trait.includes('gym') || trait.includes('workout')) {
     return `How's your fitness journey going? : )`;
   }
   
-  // Photography-related traits
   if (trait.includes('photography') || trait.includes('photo')) {
     return `Captured any great shots recently? : )`;
   }
   
-  // Style-related traits
-  if (trait.includes('jacket') || trait.includes('shirt') || trait.includes('tshirt') || trait.includes('beanie') || trait.includes('cap') || trait.includes('coat')) {
-    return `Where did you get that awesome ${trait}? : )`;
+  if (trait.includes('jacket') || trait.includes('shirt') || trait.includes('style')) {
+    return `Where did you get that awesome style? : )`;
   }
   
-  // Adventure-related traits
   if (trait.includes('adventure')) {
-    if (trait.includes('wife') || trait.includes('spouse') || trait.includes('partner')) {
-      return `How are the adventures with your ${trait.includes('wife') ? 'wife' : 'partner'} going? : )`;
-    }
     return `What's your next adventure? : )`;
   }
   
-  // Work-related traits
-  if (trait.includes('work') || trait.includes('job') || trait.includes('career') || trait.includes('at ')) {
-    return `How's work going? : )`;
-  }
-  
-  // Default response if no specific pattern matches
+  // Default
   return `How's your gym progress going? : )`;
-};
+}
 
 const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
   const { name, interests } = leadInfo;
   
-  // Parse interests to get first and second trait
-  let firstTrait = '';
+  // Parse interests to get second trait
   let secondTrait = '';
   
   if (interests && interests.trim()) {
     const traitParts = interests.split('/').map(part => part.trim());
-    firstTrait = traitParts[0] || '';
     secondTrait = traitParts[1] || '';
   }
 
@@ -273,8 +207,7 @@ const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
   
   // Add personalized PS based on second trait
   if (secondTrait) {
-    let personalizedPS = getPersonalizedPSMessage(secondTrait);
-    message += `P.S. ${personalizedPS}`;
+    message += `P.S. ${getPersonalizedPS(secondTrait)}`;
   } else {
     message += `P.S. How's your gym progress going? : )`;
   }
