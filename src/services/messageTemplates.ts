@@ -277,9 +277,103 @@ export const generateFirstTraitMessage = (trait: string): string => {
 
 /**
  * Generates a personalized message for the second trait (PS section)
+ * Using trait interpretation rather than direct text copying
  */
 export const generateSecondTraitMessage = (trait: string): string => {
   const lowerTrait = normalizeTraitText(trait);
+  
+  // Work/Business Traits
+  if (lowerTrait.includes('promot') && (lowerTrait.includes('work') || lowerTrait.includes('business'))) {
+    const options = [
+      "How's the business promotion going? Always hustling",
+      "Love seeing you push your work out there — what's your main focus right now",
+      "Your marketing game is solid bro — what platforms work best for you"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('business owner') || lowerTrait.includes('entrepreneur')) {
+    const options = [
+      "How's the business treating you these days",
+      "Entrepreneurship life keeping you busy? Love the hustle",
+      "What's the latest with your business ventures"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('content creator')) {
+    const options = [
+      "How's the content creation going? Always creating something cool",
+      "Your content game is strong — what's your favorite platform to create on",
+      "Love seeing your creative work — what projects you working on now"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Personal Life Traits
+  if (lowerTrait.includes('got married') || lowerTrait.includes('married')) {
+    const options = [
+      "How's married life treating you? Hope you're both doing amazing",
+      "Congrats on the marriage bro — how are you guys settling in",
+      "Marriage life looks good on you! How's everything going"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('got engaged') || lowerTrait.includes('engaged')) {
+    const options = [
+      "How's the engagement going? Must be exciting planning everything",
+      "Congrats on the engagement bro — when's the big day",
+      "Engagement life treating you well? So happy for you both"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('cat') && (lowerTrait.includes('has') || lowerTrait.includes('pet') || lowerTrait.includes('love'))) {
+    const options = [
+      "How's your cat doing? Always love seeing pet owners",
+      "Your cat looks adorable in your pics — what's their name",
+      "Cat parent life treating you well? They're such great companions"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('dog') && (lowerTrait.includes('has') || lowerTrait.includes('pet') || lowerTrait.includes('love'))) {
+    const options = [
+      "How's your dog doing? Always love fellow dog owners",
+      "Your dog looks awesome in your pics — what breed is it",
+      "Dog parent life treating you well? Best companions ever"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('babies') || lowerTrait.includes('kids') || lowerTrait.includes('children')) {
+    const options = [
+      "How are the little ones doing? Parent life keeping you busy",
+      "Kids must keep you on your toes! How's dad life",
+      "Family life looks good on you bro — how are the kids"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Hobby/Interest Traits
+  if (lowerTrait.includes('noodles') || lowerTrait.includes('foodie') || lowerTrait.includes('food')) {
+    const options = [
+      "Still exploring new food spots? Always love meeting fellow foodies",
+      "What's your latest food discovery? Always looking for recommendations",
+      "Your food game is on point — any favorite restaurants lately"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('cocktail') || lowerTrait.includes('beer') || lowerTrait.includes('drinks')) {
+    const options = [
+      "Still enjoying the cocktail scene? Any favorite spots",
+      "What's your go-to drink these days? Always curious about recommendations",
+      "Your taste in drinks is solid — any favorite bars"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
   
   // Clothing Items - Shirts/Tops
   if (lowerTrait.includes('polo') && (lowerTrait.includes('stylish') || lowerTrait.includes('nice') || lowerTrait.includes('cool'))) {
@@ -415,137 +509,296 @@ export const generateSecondTraitMessage = (trait: string): string => {
     return options[Math.floor(Math.random() * options.length)];
   }
   
-  // Family/Relationships (Very Common)
+  // Family/Relationships - Interpreted versions
   if (lowerTrait.includes('has gf') || lowerTrait.includes('girlfriend')) {
-    return `How's things with the girlfriend`;
+    const options = [
+      "How are things with your girlfriend? Hope you're both doing well",
+      "You and your girlfriend still enjoying time together? Relationship goals",
+      "How's the relationship going? Always good to have someone special"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('has wife') || (lowerTrait.includes('wife') && !lowerTrait.includes('travel'))) {
-    return `How's married life treating you`;
+    const options = [
+      "How's married life treating you guys? Hope all's well",
+      "You and the wife doing good? Always nice to see happy couples",
+      "How's everything with the family? Hope you're all doing great"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('travel') && lowerTrait.includes('wife')) {
-    return `How was traveling with the wife`;
+    const options = [
+      "How was that trip with your wife? Always good to travel together",
+      "You guys still planning more travels? Best way to make memories",
+      "That vacation with your wife looked amazing! Where to next"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('travel') && lowerTrait.includes('gf')) {
-    return `How was traveling with your girlfriend`;
+    const options = [
+      "How was traveling with your girlfriend? Making good memories",
+      "That trip with your girlfriend looked awesome! Any future travel plans",
+      "Traveling as a couple is the best! How was your experience"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('has baby') || lowerTrait.includes('baby')) {
-    return `How's parenthood going`;
+    const options = [
+      "How's the little one doing? Parenthood is quite the journey",
+      "Baby keeping you busy? Those early years are precious",
+      "How's dad life treating you? Must be an amazing experience"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
-  if (lowerTrait.includes('kids') || lowerTrait.includes('children')) {
-    return `How are the kids doing`;
-  }
+  
   if (lowerTrait.includes('loves') && lowerTrait.includes('fam')) {
-    return `How's family time`;
+    const options = [
+      "How's the family doing? Always great to see family-oriented guys",
+      "Been spending quality time with the family lately? That's what matters most",
+      "Family time is the best time! How's everyone doing"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('adventure') && lowerTrait.includes('wife')) {
-    return `How was the adventure with your wife`;
+    const options = [
+      "How was that adventure with your wife? Couples who explore together stay together",
+      "You guys always seem to find cool adventures! What's next on the list",
+      "That adventure with your wife looked amazing! How was the experience"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
-  if (lowerTrait.includes('got married') || lowerTrait.includes('married')) {
-    return `How's married life`;
-  }
-  if (lowerTrait.includes('engaged') || lowerTrait.includes('engagement')) {
-    return `How's the engagement going`;
-  }
+  
   if (lowerTrait.includes('travel') && lowerTrait.includes('fiancee')) {
-    return `How was traveling with your fiancee`;
+    const options = [
+      "How was traveling with your fiancée? Pre-wedding adventures are the best",
+      "That trip with your fiancée looked incredible! Wedding planning going well too",
+      "You two seem to travel well together! How was the experience"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
   
-  // Fitness/Sports (Common)
+  // Fitness/Sports - Interpreted versions
   if (lowerTrait.includes('fitness')) {
-    return `How's your fitness journey going`;
+    const options = [
+      "Still keeping up with your fitness routine? Looking strong man",
+      "Your fitness journey is impressive! What's your current focus",
+      "How's the gym progress lately? Always good to see dedicated people"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('athlete')) {
-    return `How's your athletic training`;
+    const options = [
+      "Still training hard? Your athletic dedication is impressive",
+      "How's the athletic training going? Always pushing limits",
+      "What competitions are you preparing for? Your discipline is motivating"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('powerlift')) {
-    return `How's your powerlifting progress`;
+    const options = [
+      "How's your strength training going? Those lifts looking solid",
+      "Still hitting PRs in powerlifting? That dedication is impressive",
+      "What's your current focus in powerlifting? Always respect the strength game"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('bodybuilding')) {
-    return `How's your bodybuilding journey`;
+    const options = [
+      "How's the muscle building going? Your physique is looking solid",
+      "What's your current bodybuilding split? Always curious about different approaches",
+      "Still dedicated to the gains? Your consistency is impressive"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('swim')) {
-    return `How's your swimming training`;
+    const options = [
+      "Still hitting the pool regularly? Swimming is such great exercise",
+      "How's your swimming training going? Such a complete workout",
+      "Been improving your swim times? That dedication to the water is impressive"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('cycling') || lowerTrait.includes('bike')) {
-    return `How's your cycling adventures`;
+    const options = [
+      "Still getting out on the bike regularly? Great way to stay fit",
+      "Any favorite cycling routes lately? Always looking for recommendations",
+      "How's the cycling going? Such a great way to explore and stay fit"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('rock climbing') || lowerTrait.includes('climbing')) {
-    return `How's your climbing progress`;
+    const options = [
+      "Still conquering those climbing routes? Such an impressive sport",
+      "How's the climbing progress? That grip strength must be insane",
+      "Been to any new climbing spots lately? Always admire the mental and physical challenge"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('muay thai')) {
-    return `How's your muay thai training`;
+    const options = [
+      "Still training Muay Thai regularly? Such an intense discipline",
+      "How's your striking progress? That dedication to martial arts is impressive",
+      "Been sparring much lately? Always respect for combat sports training"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('boxing')) {
-    return `How's your boxing training`;
+    const options = [
+      "Still putting in rounds at the boxing gym? Great discipline",
+      "How's your boxing training going? Nothing like that workout",
+      "Working on any specific boxing techniques lately? Always respect the sweet science"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('run')) {
-    return `How's your running training`;
+    const options = [
+      "Still keeping up with your running routine? Great way to stay fit",
+      "How's the cardio progress? Running is such a mental game too",
+      "Training for any races coming up? Your endurance is impressive"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
   
-  // Travel/Adventure
+  // Travel/Adventure - Interpreted versions
   if (lowerTrait.includes('travel') && !lowerTrait.includes('wife') && !lowerTrait.includes('gf') && !lowerTrait.includes('fiancee')) {
-    return `How was your recent travels`;
+    const options = [
+      "Been to any interesting places lately? Your travel pics are always cool",
+      "Got any upcoming travel plans? Always good to have adventures lined up",
+      "What's been your favorite destination so far? Always looking for recommendations"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('adventure') && !lowerTrait.includes('wife') && !lowerTrait.includes('friends')) {
-    return `How was your latest adventure`;
+    const options = [
+      "What's your next adventure going to be? Always inspiring to see",
+      "Been on any exciting adventures lately? Living life to the fullest",
+      "Your adventure spirit is awesome! What's been your favorite experience"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('adventure') && lowerTrait.includes('friends')) {
-    return `How was the adventure with friends`;
+    const options = [
+      "Those adventures with your friends look epic! Any new plans coming up",
+      "You guys seem to have the best adventures! What's been the highlight so far",
+      "Friend adventures are the best! Got any trips planned with the crew"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('sky diving') || lowerTrait.includes('skydiving')) {
-    return `How was the sky diving experience`;
+    const options = [
+      "That skydiving experience looks incredible! How was the adrenaline rush",
+      "You've got some serious courage with that skydiving! Planning to go again",
+      "Skydiving is on my bucket list! How was your experience taking the leap"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('jetski')) {
-    return `How was the jetski ride`;
+    const options = [
+      "That jetski adventure looked awesome! How was the experience",
+      "You seem to enjoy water sports! How was jetskiing",
+      "Jetskiing looks like such a rush! Was it as fun as it looks"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
   
-  // Fashion/Style Items (as second trait) - Legacy patterns kept for compatibility
-  if (lowerTrait.includes('jacket') && !lowerTrait.includes('puffer')) {
-    return `Where did you get that stylish jacket`;
-  }
-  if (lowerTrait.includes('hairstyle') || lowerTrait.includes('haircut')) {
-    return `Where did you get that fresh cut`;
-  }
-  if (lowerTrait.includes('polo')) {
-    return `Where did you get that cool polo`;
-  }
-  if (lowerTrait.includes('sneakers') || lowerTrait.includes('shoes')) {
-    return `Where did you get those awesome sneakers`;
-  }
-  
-  // Hobbies/Interests
+  // Hobbies/Interests - Interpreted versions
   if (lowerTrait.includes('photo') && !lowerTrait.includes('photographer')) {
-    return `How's the photography going`;
+    const options = [
+      "Your photography skills are impressive! What camera do you use",
+      "Been capturing any interesting shots lately? Your eye for detail is great",
+      "Photography is such a cool hobby! What subjects do you enjoy shooting most"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('music')) {
-    return `How's your music coming along`;
+    const options = [
+      "What kind of music are you into these days? Always looking for recommendations",
+      "Been to any good concerts lately? Music scene is finally back",
+      "Your music taste seems solid! Who are you listening to these days"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('party') || lowerTrait.includes('partying')) {
-    return `How was your recent party`;
+    const options = [
+      "Been to any good parties lately? Always good to unwind",
+      "The social scene treating you well? Life's about balance",
+      "You seem to know the best spots! Any recommendations for good venues"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('coffee')) {
-    return `How's your coffee exploration`;
+    const options = [
+      "Found any great coffee spots lately? Always looking for good recommendations",
+      "What's your go-to coffee order? Everyone's got their perfect cup",
+      "The coffee culture here is amazing! Any favorite cafés"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('baking')) {
-    return `How's your baking skills progressing`;
+    const options = [
+      "Been baking anything delicious lately? Such a rewarding hobby",
+      "What's your specialty when it comes to baking? Always impressed by people with that skill",
+      "Baking is such a cool skill! What got you into it"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('anime')) {
-    return `What anime are you watching lately`;
+    const options = [
+      "Been watching any good anime lately? Always looking for recommendations",
+      "What's your favorite anime series? The art style is always impressive",
+      "Anime has such amazing storytelling! What genres do you enjoy most"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('gaming') || lowerTrait.includes('game')) {
-    return `How's your gaming setup`;
+    const options = [
+      "Been playing any good games lately? Always looking for recommendations",
+      "What's your go-to game these days? Gaming is such a great escape",
+      "Your gaming setup looks solid! What do you play most often"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
+  
   if (lowerTrait.includes('collecting') && lowerTrait.includes('watch')) {
-    return `How's your watch collection growing`;
+    const options = [
+      "Your watch collection looks impressive! Any recent additions",
+      "What's your favorite piece in your watch collection? Such a classy hobby",
+      "Watch collecting is such a refined interest! What brands do you focus on"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
   }
   
-  // Food patterns
-  if (lowerTrait.includes('food') || lowerTrait.includes('eat')) {
-    return `Found any good food places lately`;
-  }
-  
-  // Default response for unmatched traits
-  return `How's your ${lowerTrait} going`;
+  // Default response for unmatched traits - more conversational
+  const defaultOptions = [
+    `What got you interested in ${lowerTrait}? Always curious about people's passions`,
+    `How long have you been into ${lowerTrait}? Seems really interesting`,
+    `${lowerTrait} seems fascinating! What do you enjoy most about it`
+  ];
+  return defaultOptions[Math.floor(Math.random() * defaultOptions.length)];
 };
 
 /**
