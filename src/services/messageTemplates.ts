@@ -71,7 +71,7 @@ export const generateFirstTraitMessage = (trait: string): string => {
   
   // Fitness & Sports (Most Common)
   if (lowerTrait.includes('fitness')) {
-    return `saw that you're into fitness, power`;
+    return `saw that you're into fitness, love the dedication`;
   }
   if (lowerTrait.includes('bodybuilding')) {
     return `saw your bodybuilding journey, beast mode`;
@@ -142,6 +142,9 @@ export const generateFirstTraitMessage = (trait: string): string => {
   if (lowerTrait.includes('nurse')) {
     return `saw that you're a nurse, healthcare hero`;
   }
+  if (lowerTrait.includes('health worker')) {
+    return `saw that you're a health worker, respect for the service`;
+  }
   if (lowerTrait.includes('physio')) {
     return `saw that you're a physiotherapist, healing hands`;
   }
@@ -163,6 +166,9 @@ export const generateFirstTraitMessage = (trait: string): string => {
   if (lowerTrait.includes('photographer')) {
     return `saw your photography skills, artistic eye`;
   }
+  if (lowerTrait.includes('photography')) {
+    return `saw your photography work, artistic eye`;
+  }
   if (lowerTrait.includes('musician')) {
     return `saw your music talents, sound creator`;
   }
@@ -171,6 +177,12 @@ export const generateFirstTraitMessage = (trait: string): string => {
   }
   if (lowerTrait.includes('financial advisor')) {
     return `saw that you're a financial advisor, money guru`;
+  }
+  if (lowerTrait.includes('designer')) {
+    return `saw that you're a designer, creative talent`;
+  }
+  if (lowerTrait.includes('real estate agent')) {
+    return `saw that you're a real estate agent, property pro`;
   }
   
   // Education/Military
@@ -271,7 +283,18 @@ export const generateFirstTraitMessage = (trait: string): string => {
     return `saw that you're a bodybuilding athlete, muscle master`;
   }
   
-  // Default response for unmatched traits
+  // Default response for unmatched traits - don't use "into" for professions
+  if (lowerTrait.includes('worker') || lowerTrait.includes('agent') || 
+      lowerTrait.includes('manager') || lowerTrait.includes('director') || 
+      lowerTrait.includes('specialist') || lowerTrait.includes('consultant') || 
+      lowerTrait.includes('analyst') || lowerTrait.includes('professional') ||
+      lowerTrait.includes('designer') || lowerTrait.includes('developer') ||
+      lowerTrait.includes('engineer') || lowerTrait.includes('doctor') ||
+      lowerTrait.includes('lawyer') || lowerTrait.includes('accountant')) {
+    return `saw that you're a ${lowerTrait}, impressive`;
+  }
+  
+  // For hobbies and interests, use "into"
   return `saw that you're into ${lowerTrait}, love it haha`;
 };
 
@@ -306,6 +329,17 @@ export const generateSecondTraitMessage = (trait: string): string => {
       "How's the content creation going? Always creating something cool",
       "Your content game is strong — what's your favorite platform to create on",
       "Love seeing your creative work — what projects you working on now"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Work at specific place
+  if (lowerTrait.includes('work') && lowerTrait.includes('at')) {
+    const workplace = extractHandleOrWebsite(lowerTrait) || lowerTrait.split('at')[1]?.trim() || 'your workplace';
+    const options = [
+      `How's everything going with ${workplace}? Love seeing the content`,
+      `What's new with your work at ${workplace}`,
+      `How's the journey with ${workplace} going`
     ];
     return options[Math.floor(Math.random() * options.length)];
   }
@@ -375,6 +409,36 @@ export const generateSecondTraitMessage = (trait: string): string => {
     return options[Math.floor(Math.random() * options.length)];
   }
   
+  // Photography
+  if (lowerTrait.includes('photography')) {
+    const options = [
+      "Been capturing any interesting shots lately? Your photography skills are great",
+      "What's your favorite subject to photograph? Your shots look amazing",
+      "Your photography work is impressive — what camera do you use"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Travel
+  if (lowerTrait.includes('travel')) {
+    const options = [
+      "How's traveling with the family going? Any favorite destinations",
+      "Any exciting travel plans coming up? Love seeing your adventures",
+      "Where's your favorite place you've traveled to so far"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Education
+  if (lowerTrait.includes('stud') && lowerTrait.includes('law')) {
+    const options = [
+      "How's the legal career going since your studies",
+      "Law is such a challenging field — what area are you focusing on",
+      "Your legal background is impressive — what kind of law interests you most"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
   // Clothing Items - Shirts/Tops
   if (lowerTrait.includes('polo') && (lowerTrait.includes('stylish') || lowerTrait.includes('nice') || lowerTrait.includes('cool'))) {
     const options = [
@@ -419,6 +483,16 @@ export const generateSecondTraitMessage = (trait: string): string => {
       "That puffer jacket looks sick — keeping you warm and stylish",
       "Your puffer game is strong! What brand do you recommend",
       "Love the puffer choice — perfect for the season right"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Coat - special handling for "awesome coat"
+  if (lowerTrait.includes('coat')) {
+    const options = [
+      "That coat looks great on you — where'd you get it from",
+      "Your coat style is on point! What brand is it",
+      "Love the coat choice — perfect for your style"
     ];
     return options[Math.floor(Math.random() * options.length)];
   }
@@ -499,307 +573,57 @@ export const generateSecondTraitMessage = (trait: string): string => {
     return options[Math.floor(Math.random() * options.length)];
   }
   
-  // Special skills/hobbies
-  if (lowerTrait.includes('magician') || lowerTrait.includes('magic show')) {
+  // Generic appearance traits - avoid awkward phrasing like "How long have you been into awesome coat?"
+  if ((lowerTrait.includes('awesome') || lowerTrait.includes('nice') || lowerTrait.includes('cool') || 
+       lowerTrait.includes('stylish') || lowerTrait.includes('great')) && 
+      (lowerTrait.includes('look') || lowerTrait.includes('style') || lowerTrait.includes('outfit') || 
+       lowerTrait.includes('fashion') || lowerTrait.includes('dressed'))) {
     const options = [
-      "You still doing magic shows lately? That's such a cool skill",
-      "How long you been doing magic? That's awesome bro",
-      "Magic is such a unique talent — what got you into it"
+      "Your style is always on point — where do you shop usually",
+      "Love your fashion sense — any style inspirations",
+      "Your outfit choices are solid — what's your go-to look"
     ];
     return options[Math.floor(Math.random() * options.length)];
   }
   
-  // Family/Relationships - Interpreted versions
-  if (lowerTrait.includes('has gf') || lowerTrait.includes('girlfriend')) {
-    const options = [
-      "How are things with your girlfriend? Hope you're both doing well",
-      "You and your girlfriend still enjoying time together? Relationship goals",
-      "How's the relationship going? Always good to have someone special"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
+  // Default PS message based on trait category
+  if (isAppearanceTrait(lowerTrait)) {
+    return "Your style is always on point — any fashion recommendations";
   }
   
-  if (lowerTrait.includes('has wife') || (lowerTrait.includes('wife') && !lowerTrait.includes('travel'))) {
-    const options = [
-      "How's married life treating you guys? Hope all's well",
-      "You and the wife doing good? Always nice to see happy couples",
-      "How's everything with the family? Hope you're all doing great"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
+  if (isProfessionTrait(lowerTrait)) {
+    return "How's work been treating you lately";
   }
   
-  if (lowerTrait.includes('travel') && lowerTrait.includes('wife')) {
-    const options = [
-      "How was that trip with your wife? Always good to travel together",
-      "You guys still planning more travels? Best way to make memories",
-      "That vacation with your wife looked amazing! Where to next"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
+  if (isHobbyTrait(lowerTrait)) {
+    return "Been enjoying your interests lately? Always good to make time for what you love";
   }
   
-  if (lowerTrait.includes('travel') && lowerTrait.includes('gf')) {
-    const options = [
-      "How was traveling with your girlfriend? Making good memories",
-      "That trip with your girlfriend looked awesome! Any future travel plans",
-      "Traveling as a couple is the best! How was your experience"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('has baby') || lowerTrait.includes('baby')) {
-    const options = [
-      "How's the little one doing? Parenthood is quite the journey",
-      "Baby keeping you busy? Those early years are precious",
-      "How's dad life treating you? Must be an amazing experience"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('loves') && lowerTrait.includes('fam')) {
-    const options = [
-      "How's the family doing? Always great to see family-oriented guys",
-      "Been spending quality time with the family lately? That's what matters most",
-      "Family time is the best time! How's everyone doing"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('adventure') && lowerTrait.includes('wife')) {
-    const options = [
-      "How was that adventure with your wife? Couples who explore together stay together",
-      "You guys always seem to find cool adventures! What's next on the list",
-      "That adventure with your wife looked amazing! How was the experience"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('travel') && lowerTrait.includes('fiancee')) {
-    const options = [
-      "How was traveling with your fiancée? Pre-wedding adventures are the best",
-      "That trip with your fiancée looked incredible! Wedding planning going well too",
-      "You two seem to travel well together! How was the experience"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  // Fitness/Sports - Interpreted versions
-  if (lowerTrait.includes('fitness')) {
-    const options = [
-      "Still keeping up with your fitness routine? Looking strong man",
-      "Your fitness journey is impressive! What's your current focus",
-      "How's the gym progress lately? Always good to see dedicated people"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('athlete')) {
-    const options = [
-      "Still training hard? Your athletic dedication is impressive",
-      "How's the athletic training going? Always pushing limits",
-      "What competitions are you preparing for? Your discipline is motivating"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('powerlift')) {
-    const options = [
-      "How's your strength training going? Those lifts looking solid",
-      "Still hitting PRs in powerlifting? That dedication is impressive",
-      "What's your current focus in powerlifting? Always respect the strength game"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('bodybuilding')) {
-    const options = [
-      "How's the muscle building going? Your physique is looking solid",
-      "What's your current bodybuilding split? Always curious about different approaches",
-      "Still dedicated to the gains? Your consistency is impressive"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('swim')) {
-    const options = [
-      "Still hitting the pool regularly? Swimming is such great exercise",
-      "How's your swimming training going? Such a complete workout",
-      "Been improving your swim times? That dedication to the water is impressive"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('cycling') || lowerTrait.includes('bike')) {
-    const options = [
-      "Still getting out on the bike regularly? Great way to stay fit",
-      "Any favorite cycling routes lately? Always looking for recommendations",
-      "How's the cycling going? Such a great way to explore and stay fit"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('rock climbing') || lowerTrait.includes('climbing')) {
-    const options = [
-      "Still conquering those climbing routes? Such an impressive sport",
-      "How's the climbing progress? That grip strength must be insane",
-      "Been to any new climbing spots lately? Always admire the mental and physical challenge"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('muay thai')) {
-    const options = [
-      "Still training Muay Thai regularly? Such an intense discipline",
-      "How's your striking progress? That dedication to martial arts is impressive",
-      "Been sparring much lately? Always respect for combat sports training"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('boxing')) {
-    const options = [
-      "Still putting in rounds at the boxing gym? Great discipline",
-      "How's your boxing training going? Nothing like that workout",
-      "Working on any specific boxing techniques lately? Always respect the sweet science"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('run')) {
-    const options = [
-      "Still keeping up with your running routine? Great way to stay fit",
-      "How's the cardio progress? Running is such a mental game too",
-      "Training for any races coming up? Your endurance is impressive"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  // Travel/Adventure - Interpreted versions
-  if (lowerTrait.includes('travel') && !lowerTrait.includes('wife') && !lowerTrait.includes('gf') && !lowerTrait.includes('fiancee')) {
-    const options = [
-      "Been to any interesting places lately? Your travel pics are always cool",
-      "Got any upcoming travel plans? Always good to have adventures lined up",
-      "What's been your favorite destination so far? Always looking for recommendations"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('adventure') && !lowerTrait.includes('wife') && !lowerTrait.includes('friends')) {
-    const options = [
-      "What's your next adventure going to be? Always inspiring to see",
-      "Been on any exciting adventures lately? Living life to the fullest",
-      "Your adventure spirit is awesome! What's been your favorite experience"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('adventure') && lowerTrait.includes('friends')) {
-    const options = [
-      "Those adventures with your friends look epic! Any new plans coming up",
-      "You guys seem to have the best adventures! What's been the highlight so far",
-      "Friend adventures are the best! Got any trips planned with the crew"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('sky diving') || lowerTrait.includes('skydiving')) {
-    const options = [
-      "That skydiving experience looks incredible! How was the adrenaline rush",
-      "You've got some serious courage with that skydiving! Planning to go again",
-      "Skydiving is on my bucket list! How was your experience taking the leap"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('jetski')) {
-    const options = [
-      "That jetski adventure looked awesome! How was the experience",
-      "You seem to enjoy water sports! How was jetskiing",
-      "Jetskiing looks like such a rush! Was it as fun as it looks"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  // Hobbies/Interests - Interpreted versions
-  if (lowerTrait.includes('photo') && !lowerTrait.includes('photographer')) {
-    const options = [
-      "Your photography skills are impressive! What camera do you use",
-      "Been capturing any interesting shots lately? Your eye for detail is great",
-      "Photography is such a cool hobby! What subjects do you enjoy shooting most"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('music')) {
-    const options = [
-      "What kind of music are you into these days? Always looking for recommendations",
-      "Been to any good concerts lately? Music scene is finally back",
-      "Your music taste seems solid! Who are you listening to these days"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('party') || lowerTrait.includes('partying')) {
-    const options = [
-      "Been to any good parties lately? Always good to unwind",
-      "The social scene treating you well? Life's about balance",
-      "You seem to know the best spots! Any recommendations for good venues"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('coffee')) {
-    const options = [
-      "Found any great coffee spots lately? Always looking for good recommendations",
-      "What's your go-to coffee order? Everyone's got their perfect cup",
-      "The coffee culture here is amazing! Any favorite cafés"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('baking')) {
-    const options = [
-      "Been baking anything delicious lately? Such a rewarding hobby",
-      "What's your specialty when it comes to baking? Always impressed by people with that skill",
-      "Baking is such a cool skill! What got you into it"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('anime')) {
-    const options = [
-      "Been watching any good anime lately? Always looking for recommendations",
-      "What's your favorite anime series? The art style is always impressive",
-      "Anime has such amazing storytelling! What genres do you enjoy most"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('gaming') || lowerTrait.includes('game')) {
-    const options = [
-      "Been playing any good games lately? Always looking for recommendations",
-      "What's your go-to game these days? Gaming is such a great escape",
-      "Your gaming setup looks solid! What do you play most often"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  if (lowerTrait.includes('collecting') && lowerTrait.includes('watch')) {
-    const options = [
-      "Your watch collection looks impressive! Any recent additions",
-      "What's your favorite piece in your watch collection? Such a classy hobby",
-      "Watch collecting is such a refined interest! What brands do you focus on"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-  
-  // Default response for unmatched traits - more conversational
-  const defaultOptions = [
-    `What got you interested in ${lowerTrait}? Always curious about people's passions`,
-    `How long have you been into ${lowerTrait}? Seems really interesting`,
-    `${lowerTrait} seems fascinating! What do you enjoy most about it`
-  ];
-  return defaultOptions[Math.floor(Math.random() * defaultOptions.length)];
+  // Truly generic fallback
+  return "How's everything been going with you lately";
 };
+
+// Helper functions to categorize traits
+function isAppearanceTrait(trait: string): boolean {
+  const appearanceKeywords = ['jacket', 'coat', 'shirt', 'tshirt', 't-shirt', 'hoodie', 'sweater', 
+                             'jeans', 'pants', 'shoes', 'sneakers', 'watch', 'glasses', 'sunglasses',
+                             'cap', 'hat', 'beanie', 'style', 'outfit', 'fashion', 'dressed', 'look'];
+  return appearanceKeywords.some(keyword => trait.includes(keyword));
+}
+
+function isProfessionTrait(trait: string): boolean {
+  const professionKeywords = ['work', 'job', 'career', 'business', 'profession', 'company',
+                             'doctor', 'lawyer', 'engineer', 'teacher', 'designer', 'developer',
+                             'manager', 'director', 'consultant', 'analyst', 'specialist'];
+  return professionKeywords.some(keyword => trait.includes(keyword));
+}
+
+function isHobbyTrait(trait: string): boolean {
+  const hobbyKeywords = ['hobby', 'interest', 'passion', 'sport', 'fitness', 'gym', 'workout',
+                        'run', 'swim', 'bike', 'hike', 'climb', 'photography', 'music', 'art',
+                        'reading', 'gaming', 'travel', 'food', 'cooking', 'baking'];
+  return hobbyKeywords.some(keyword => trait.includes(keyword));
+}
 
 /**
  * Applies Singlish tone modifiers based on the selected level
@@ -986,8 +810,7 @@ export const generateTemplateMessage = (
   name: string, 
   traits: TraitPersonalization,
   toneLevel: string,
-  sender: string = 'Jet',
-  senderHandle: string = '@_muscle.baby_'
+  template: string = 'company'
 ): string => {
   // Parse traits
   const firstTrait = traits.firstTrait;
@@ -997,16 +820,33 @@ export const generateTemplateMessage = (
   const firstTraitMessage = generateFirstTraitMessage(firstTrait);
   let secondTraitMessage = generateSecondTraitMessage(secondTrait);
   
+  // Ensure PS line is relevant to the person's traits
+  // If the default generic message was returned, try using the first trait instead
+  if (secondTraitMessage === "How's everything been going with you lately" && firstTrait !== secondTrait) {
+    const alternateMessage = generateSecondTraitMessage(firstTrait);
+    if (alternateMessage !== "How's everything been going with you lately") {
+      secondTraitMessage = alternateMessage;
+    }
+  }
+  
   // Add appropriate emoji to PS section
   secondTraitMessage = addAppropriateEmoji(secondTraitMessage);
   
-  // Apply tone modifiers based on level
-  const introWithTone = applyToneModifiers(`${sender} here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw`, 'intro', toneLevel);
-  const btwWithTone = applyToneModifiers(firstTraitMessage, 'btw', toneLevel);
-  const psWithTone = applyToneModifiers(secondTraitMessage, 'ps', toneLevel);
+  // Different templates based on sender and message type
+  let message = '';
   
-  // Standard services section (always in standard English)
-  const servicesSection = `They get: 
+  if (template === 'max-company') {
+    // MAX - Company Account Template
+    // Apply tone modifiers based on level
+    const introWithTone = applyToneModifiers(`Max here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw`, 'intro', toneLevel);
+    const btwWithTone = applyToneModifiers(firstTraitMessage, 'btw', toneLevel);
+    const psWithTone = applyToneModifiers(secondTraitMessage, 'ps', toneLevel);
+    
+    // Format PS with italics
+    const formattedPs = `*${psWithTone}?*`;
+    
+    // Standard services section (always in standard English)
+    const servicesSection = `They get: 
 ✅ a Personalised Diet Plan 
 ✅ a Personalised Training Plan 
 ✅ Telegram Chat Support 
@@ -1014,26 +854,22 @@ export const generateTemplateMessage = (
 ✅ To improve Mind Muscle Connection 
 ✅ To make more progress with Less Time and Effort`;
 
-  // Body text with tone modifiers if level 4
-  let bodyIntro = `I am currently looking for 5 people can join my free training project trial!`;
-  let bodyOutro = `To push them in the right direction this year 💪🏻 
+    // Body text with tone modifiers if level 4
+    let bodyIntro = `I am currently looking for 5 people can join my free training project trial!`;
+    let bodyOutro = `To push them in the right direction this year 💪🏻 
 Do you know anyone who may be interested?`;
 
-  if (toneLevel === 'level4') {
-    bodyIntro = applyToneModifiers(bodyIntro, 'body', toneLevel)
-      .replace('I am currently', 'I currently')
-      .replace('can join', 'can join in');
+    if (toneLevel === 'level4') {
+      bodyIntro = applyToneModifiers(bodyIntro, 'body', toneLevel)
+        .replace('I am currently', 'I currently')
+        .replace('can join', 'can join in');
+      
+      bodyOutro = applyToneModifiers(bodyOutro, 'body', toneLevel)
+        .replace('To push them in the right direction this year', 'Help them level up this year')
+        .replace('Do you know anyone who may be interested?', 'Got anyone interested or not?');
+    }
     
-    bodyOutro = applyToneModifiers(bodyOutro, 'body', toneLevel)
-      .replace('To push them in the right direction this year', 'Help them level up this year')
-      .replace('Do you know anyone who may be interested?', 'Got anyone interested or not?');
-  }
-  
-  // Format PS with italics
-  const formattedPs = `*${psWithTone}?*`;
-  
-  // Construct the final message
-  const message = `Hey ${name}, ${introWithTone} : )  
+    message = `Hey ${name}, ${introWithTone} : )  
 
 BTW, ${btwWithTone} 👍 
 
@@ -1044,6 +880,139 @@ ${servicesSection}
 ${bodyOutro}  
 
 PS: ${formattedPs} : )`;
+  } 
+  else if (template === 'bob-followup') {
+    // BOB FOLLOW UP Template
+    // Apply tone modifiers based on level
+    const psWithTone = applyToneModifiers(secondTraitMessage, 'ps', toneLevel);
+    
+    // Format PS with italics
+    const formattedPs = `*${psWithTone}?*`;
+    
+    // Standard services section (always in standard English)
+    const servicesSection = `They get: 
+✅ a Personalised Diet Plan 
+✅ a Personalised Training Plan 
+✅ Telegram Chat Support 
+✅ Physical Form Correction 
+✅ To improve Mind Muscle Connection 
+✅ To make more progress with Less Time and Effort`;
+
+    let intro = `Bob here, i'm not too sure if my friend Max has reached out to you yet, @max_apolloss`;
+    let bodyIntro = `but we are hosting a free training project trial, and 5 people can join us for free : )`;
+    let bodyOutro = `To push them in the right direction this year 💪🏻
+Would you be opposed to taking a slot for yourself?`;
+
+    if (toneLevel === 'level3' || toneLevel === 'level4') {
+      bodyOutro = bodyOutro.replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?');
+    }
+
+    if (toneLevel === 'level4') {
+      intro = intro.replace('Bob here,', 'Bob here lah,')
+                  .replace("i'm not too sure if", 'not sure if');
+      bodyIntro = bodyIntro.replace('but we are hosting', 'but we got')
+                          .replace('can join us', 'can join with us');
+      bodyOutro = bodyOutro.replace('To push them in the right direction this year', 'Help them level up this year');
+    }
+    
+    message = `Hey ${name}, ${intro}
+${bodyIntro}
+
+${servicesSection}
+
+${bodyOutro}
+
+PS: ${formattedPs} : )`;
+  }
+  else if (template === 'matthew-followup') {
+    // MATTHEW FOLLOW UP Template
+    // Apply tone modifiers based on level
+    const psWithTone = applyToneModifiers(secondTraitMessage, 'ps', toneLevel);
+    
+    // Format PS with italics
+    const formattedPs = `*${psWithTone}?*`;
+    
+    // Standard services section (always in standard English)
+    const servicesSection = `They get: 
+✅ a Personalised Diet Plan 
+✅ a Personalised Training Plan 
+✅ Telegram Chat Support 
+✅ Physical Form Correction 
+✅ To improve Mind Muscle Connection 
+✅ To make more progress with Less Time and Effort`;
+
+    let intro = `Matthew here, i'm not too sure if my friend Max has reached out to you yet, @max_apolloss`;
+    let bodyIntro = `but we are hosting a free training project trial, and 5 people can join us for free : )`;
+    let bodyOutro = `To push them in the right direction this year 💪🏻
+Would you be opposed to taking a slot for yourself?`;
+
+    if (toneLevel === 'level3' || toneLevel === 'level4') {
+      bodyOutro = bodyOutro.replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?');
+    }
+
+    if (toneLevel === 'level4') {
+      intro = intro.replace('Matthew here,', 'Matthew here lah,')
+                  .replace("i'm not too sure if", 'not sure if');
+      bodyIntro = bodyIntro.replace('but we are hosting', 'but we got')
+                          .replace('can join us', 'can join with us');
+      bodyOutro = bodyOutro.replace('To push them in the right direction this year', 'Help them level up this year');
+    }
+    
+    message = `Hey ${name}, ${intro}
+${bodyIntro}
+
+${servicesSection}
+
+${bodyOutro}
+
+PS: ${formattedPs} : )`;
+  }
+  else {
+    // Original Company Account Template (Jet)
+    // Apply tone modifiers based on level
+    const introWithTone = applyToneModifiers(`Jet here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw`, 'intro', toneLevel);
+    const btwWithTone = applyToneModifiers(firstTraitMessage, 'btw', toneLevel);
+    const psWithTone = applyToneModifiers(secondTraitMessage, 'ps', toneLevel);
+    
+    // Format PS with italics
+    const formattedPs = `*${psWithTone}?*`;
+    
+    // Standard services section (always in standard English)
+    const servicesSection = `They get: 
+✅ a Personalised Diet Plan 
+✅ a Personalised Training Plan 
+✅ Telegram Chat Support 
+✅ Physical Form Correction 
+✅ To improve Mind Muscle Connection 
+✅ To make more progress with Less Time and Effort`;
+
+    // Body text with tone modifiers if level 4
+    let bodyIntro = `I am currently looking for 5 people can join my free training project trial!`;
+    let bodyOutro = `To push them in the right direction this year 💪🏻 
+Do you know anyone who may be interested?`;
+
+    if (toneLevel === 'level4') {
+      bodyIntro = applyToneModifiers(bodyIntro, 'body', toneLevel)
+        .replace('I am currently', 'I currently')
+        .replace('can join', 'can join in');
+      
+      bodyOutro = applyToneModifiers(bodyOutro, 'body', toneLevel)
+        .replace('To push them in the right direction this year', 'Help them level up this year')
+        .replace('Do you know anyone who may be interested?', 'Got anyone interested or not?');
+    }
+    
+    message = `Hey ${name}, ${introWithTone} : )  
+
+BTW, ${btwWithTone} 👍 
+
+${bodyIntro}  
+
+${servicesSection} 
+
+${bodyOutro}  
+
+PS: ${formattedPs} : )`;
+  }
 
   return message;
 };
@@ -1067,8 +1036,12 @@ export const parseInputForTemplate = (input: string): { name: string; traits: Tr
   const name = lines[0].trim();
   const traitsLine = lines[1].trim();
   
-  // Split traits by ' / ' (space-slash-space) if available, preserving parentheses content
-  const traitParts = traitsLine.split(' / ').map(t => t.trim());
+  // Handle social media handles and compound traits properly
+  // Look for patterns like (ig/handle) and treat them as a single trait
+  const processedTraitsLine = traitsLine.replace(/\(\s*ig\/[^)]+\)/g, match => match.replace(/ \/ /g, '_SLASH_'));
+  
+  // Split traits by ' / ' (space-slash-space)
+  const traitParts = processedTraitsLine.split(' / ').map(t => t.trim().replace(/_SLASH_/g, ' / '));
   
   return {
     name,

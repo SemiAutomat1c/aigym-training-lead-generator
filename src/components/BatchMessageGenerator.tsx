@@ -288,8 +288,11 @@ const BatchMessageGenerator: React.FC = () => {
                     value={template}
                     onChange={(e) => setTemplate(e.target.value)}
                   >
-                    <option value="company">Company Account</option>
-                    <option value="followup">Normal Follow-up</option>
+                    <option value="company">Company Account (Jet)</option>
+                    <option value="max-company">Max - Company Account</option>
+                    <option value="followup">Normal Follow-up (Bob)</option>
+                    <option value="bob-followup">BOB - Follow-up</option>
+                    <option value="matthew-followup">MATTHEW - Follow-up</option>
                   </Form.Select>
                 </Form.Group>
               </Card.Body>

@@ -15,7 +15,7 @@ interface Message {
 const MessageGenerator: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [tone, setTone] = useState('level0');
-  const [template, setTemplate] = useState('max');
+  const [template, setTemplate] = useState('company');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -128,13 +128,11 @@ const MessageGenerator: React.FC = () => {
               onChange={(e) => setTemplate(e.target.value)}
               className="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
-              <optgroup label="Initial Messages">
-                <option value="max">MAX - Company Account</option>
-              </optgroup>
-              <optgroup label="Follow-up Messages">
-                <option value="bob">BOB - Follow-up</option>
-                <option value="matthew">MATTHEW - Follow-up</option>
-              </optgroup>
+              <option value="company">Company Account (Jet)</option>
+              <option value="max-company">Max - Company Account</option>
+              <option value="followup">Normal Follow-up (Bob)</option>
+              <option value="bob-followup">BOB - Follow-up</option>
+              <option value="matthew-followup">MATTHEW - Follow-up</option>
             </select>
           </div>
         </div>
