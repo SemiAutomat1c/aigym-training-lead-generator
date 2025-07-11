@@ -50,28 +50,31 @@ const addAppropriateEmoji = (psLine: string): string => {
 
 export const generateMessage = async (request: MessageRequest): Promise<string> => {
   const { leadInfo, tone, template } = request;
-  let message = '';
-
-  if (template === 'company') {
-    message = getCompanyMessage(leadInfo, tone);
-  } else if (template === 'followup') {
-    message = getFollowUpMessage(leadInfo, tone);
+      let message = '';
+      
+  // Match template to the appropriate function
+  if (template === 'company' || template === 'max') {
+    message = getCompanyMessage(leadInfo, tone, 'Max', '@max_apolloss');
+  } else if (template === 'followup' || template === 'bob') {
+    message = getFollowUpMessage(leadInfo, tone, 'Bob', 'Max', '@max_apolloss');
+  } else if (template === 'matthew') {
+    message = getFollowUpMessage(leadInfo, tone, 'Matthew', 'Max', '@max_apolloss');
   }
 
   return message;
 };
 
-const getCompanyMessage = (leadInfo: LeadInfo, tone: string): string => {
+const getCompanyMessage = (leadInfo: LeadInfo, tone: string, sender: string = 'Max', senderHandle: string = '@max_apolloss'): string => {
   const { name, interests } = leadInfo;
   
   // Pass the raw input to the template parser to preserve parentheses content
   const parsedInput = `${name}\n${interests || ''}`;
   const { name: parsedName, traits } = parseInputForTemplate(parsedInput);
   
-  return generateTemplateMessage(parsedName, traits, tone);
+  return generateTemplateMessage(parsedName, traits, tone, sender, senderHandle);
 };
 
-const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
+const getFollowUpMessage = (leadInfo: LeadInfo, tone: string, sender: string = 'Bob', referrer: string = 'Max', referrerHandle: string = '@max_apolloss'): string => {
   const { name, interests } = leadInfo;
   
   // Parse interests for personalization in follow-up message
@@ -80,7 +83,7 @@ const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
   const { traits } = parseInputForTemplate(parsedInput);
   
   // Base message template
-  let message = `Hey ${name}, Bob here, i'm not too sure if my friend Jet has reached out to you yet, @_muscle.baby_\n`;
+  let message = `Hey ${name}, ${sender} here, i'm not too sure if my friend ${referrer} has reached out to you yet, ${referrerHandle}\n`;
   message += `but we are hosting a free training project trial, and 5 people can join us for free : )\n\n`;
   message += `They get:\n`;
   message += `✅ a Personalised Diet Plan\n`;
@@ -127,7 +130,7 @@ const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
     message = message.replace('Would you be opposed to taking a slot for yourself?', 'Want to take one slot or not?');
   } else if (tone === 'level4') {
     // Full Singlish except services offered
-    message = message.replace('Bob here,', 'Bob here lah,')
+    message = message.replace(`${sender} here,`, `${sender} here lah,`)
                     .replace("i'm not too sure if", 'not sure if')
                     .replace('but we are hosting', 'but we got')
                     .replace('can join us', 'can join with us')

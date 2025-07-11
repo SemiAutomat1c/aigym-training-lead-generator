@@ -985,7 +985,9 @@ const addAppropriateEmoji = (psLine: string): string => {
 export const generateTemplateMessage = (
   name: string, 
   traits: TraitPersonalization,
-  toneLevel: string
+  toneLevel: string,
+  sender: string = 'Jet',
+  senderHandle: string = '@_muscle.baby_'
 ): string => {
   // Parse traits
   const firstTrait = traits.firstTrait;
@@ -999,7 +1001,7 @@ export const generateTemplateMessage = (
   secondTraitMessage = addAppropriateEmoji(secondTraitMessage);
   
   // Apply tone modifiers based on level
-  const introWithTone = applyToneModifiers(`Jet here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw`, 'intro', toneLevel);
+  const introWithTone = applyToneModifiers(`${sender} here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw`, 'intro', toneLevel);
   const btwWithTone = applyToneModifiers(firstTraitMessage, 'btw', toneLevel);
   const psWithTone = applyToneModifiers(secondTraitMessage, 'ps', toneLevel);
   
