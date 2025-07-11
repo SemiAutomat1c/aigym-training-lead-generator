@@ -1,134 +1,155 @@
 import React, { useState, useEffect } from 'react';
 import { generateMessage } from '../services/aiService';
 
-interface ExampleMessage {
+interface TestExample {
   name: string;
-  template: string;
-  tone: string;
-  interests: string;
+  traits: string;
   message: string;
+  tone: string;
 }
 
 const TestExamples: React.FC = () => {
-  const [examples, setExamples] = useState<ExampleMessage[]>([]);
+  const [examples, setExamples] = useState<TestExample[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Sample test cases from real client data
+  const testCases = [
+    // Original examples
+    {
+      name: "Henry",
+      traits: "works at (ig/mindmusclesg) / traveling with fam",
+      tone: "level2"
+    },
+    {
+      name: "Alex",
+      traits: "content creator (tt/ @gibsaw) / traveling",
+      tone: "level3"
+    },
+    
+    // New clothing/appearance examples
+    {
+      name: "James",
+      traits: "fitness / stylish polo",
+      tone: "level2"
+    },
+    {
+      name: "Michael",
+      traits: "athlete / nice tshirt",
+      tone: "level3"
+    },
+    {
+      name: "William",
+      traits: "bodybuilding / stylish jacket",
+      tone: "level4"
+    },
+    {
+      name: "Daniel",
+      traits: "running / cool sunglasses",
+      tone: "level2"
+    },
+    {
+      name: "Matthew",
+      traits: "swimming / nice watch",
+      tone: "level3"
+    },
+    {
+      name: "Christopher",
+      traits: "fitness / cool beard",
+      tone: "level4"
+    },
+    {
+      name: "Andrew",
+      traits: "powerlifting / unique hairstyle",
+      tone: "level2"
+    },
+    {
+      name: "Joshua",
+      traits: "cycling / nice sweater",
+      tone: "level3"
+    },
+    {
+      name: "David",
+      traits: "boxing / puffer jacket",
+      tone: "level4"
+    },
+    {
+      name: "Ryan",
+      traits: "muay thai / cool cap",
+      tone: "level2"
+    },
+    {
+      name: "Tyler",
+      traits: "rock climbing / nice beanie",
+      tone: "level3"
+    },
+    {
+      name: "Brandon",
+      traits: "magician / cool eyeglasses",
+      tone: "level4"
+    }
+  ];
 
   useEffect(() => {
     const generateExamples = async () => {
-      const exampleData = [
-        {
-          name: "John",
-          template: "max",
-          tone: "level0",
-          interests: "works at (ig/mindmusclesg) / traveling with fam"
-        },
-        {
-          name: "Sarah",
-          template: "max",
-          tone: "level4",
-          interests: "wears shades (tt/@gibsaw) / likes jackets"
-        },
-        {
-          name: "Mike",
-          template: "bob",
-          tone: "level0",
-          interests: "works at (https://fitnesshub.com) / beard looks good"
-        },
-        {
-          name: "Lisa",
-          template: "bob",
-          tone: "level3",
-          interests: "studying at NUS / wears nice watches"
-        },
-        {
-          name: "David",
-          template: "matthew",
-          tone: "level0",
-          interests: "works at Google / likes puffer jackets"
-        },
-        {
-          name: "Emma",
-          template: "matthew",
-          tone: "level4",
-          interests: "studying at SMU / wears caps"
-        }
-      ];
-
-      const generatedExamples: ExampleMessage[] = [];
-
-      for (const example of exampleData) {
+      const results: TestExample[] = [];
+      
+      for (const test of testCases) {
         try {
           const message = await generateMessage({
             leadInfo: {
-              name: example.name,
-              interests: example.interests,
-              company: '',
-              industry: '',
-              position: '',
-              painPoints: '',
-              additionalInfo: '',
+              name: test.name,
+              interests: test.traits
             },
             messageType: 'instagram',
-            tone: example.tone,
-            template: example.template
+            tone: test.tone,
+            template: 'company'
           });
-
-          generatedExamples.push({
-            ...example,
-            message
+          
+          results.push({
+            name: test.name,
+            traits: test.traits,
+            message,
+            tone: test.tone
           });
         } catch (error) {
-          console.error(`Error generating example for ${example.name}:`, error);
+          console.error(`Error generating message for ${test.name}:`, error);
         }
       }
-
-      setExamples(generatedExamples);
+      
+      setExamples(results);
       setIsLoading(false);
     };
-
+    
     generateExamples();
   }, []);
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Template Examples</h2>
+      <h1 className="text-2xl font-bold mb-4">Test Examples with Real Client Data</h1>
       
       {isLoading ? (
-        <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="text-center py-8">
+          <p className="text-lg">Loading examples...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-8">
           {examples.map((example, index) => (
-            <div key={index} className="border rounded-lg p-4 bg-white shadow">
+            <div key={index} className="bg-white shadow-md rounded p-4">
               <div className="mb-2">
-                <span className="font-bold">Name:</span> {example.name}
+                <span className="font-semibold">Name:</span> {example.name}
               </div>
               <div className="mb-2">
-                <span className="font-bold">Template:</span> {example.template.toUpperCase()}
+                <span className="font-semibold">Traits:</span> {example.traits}
               </div>
               <div className="mb-2">
-                <span className="font-bold">Tone:</span> {example.tone}
+                <span className="font-semibold">Tone Level:</span> {example.tone}
               </div>
-              <div className="mb-2">
-                <span className="font-bold">Traits:</span> {example.interests}
-              </div>
-              <div className="mb-2">
-                <span className="font-bold">Message:</span>
-                <div className="whitespace-pre-wrap bg-gray-50 p-3 rounded mt-1 border">
+              <div className="mt-4">
+                <h3 className="font-semibold mb-2">Generated Message:</h3>
+                <div className="bg-gray-100 p-4 rounded whitespace-pre-wrap">
                   {example.message}
                 </div>
               </div>
-              <button
-                onClick={() => copyToClipboard(example.message)}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
-              >
-                Copy Message
-              </button>
             </div>
           ))}
         </div>

@@ -1,100 +1,165 @@
 import React from 'react';
+import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+
+// Custom component that combines Link and Button
+const LinkButton = ({ to, variant, size, className, children }: { 
+  to: string; 
+  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light' | 'link' | 'outline-primary' | 'outline-secondary' | 'outline-success' | 'outline-danger' | 'outline-warning' | 'outline-info' | 'outline-dark' | 'outline-light'; 
+  size?: "sm" | "lg"; 
+  className?: string;
+  children: React.ReactNode;
+}) => (
+  <Link to={to} style={{ textDecoration: 'none' }}>
+    <Button variant={variant} size={size} className={className}>
+      {children}
+    </Button>
+  </Link>
+);
 
 const Home: React.FC = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <h2 className="text-2xl font-bold mb-4">Welcome to AI Gym Training Lead Generator</h2>
-        <p className="mb-4">
-          This application helps you generate personalized Instagram DM messages for gym training leads.
-          The messages are tailored based on the lead's traits and interests, making your outreach more effective.
+    <Container>
+      <div className="text-center mb-5 py-5">
+        <h1 className="display-4 fw-bold">AI-Powered Gym Training Lead Generator</h1>
+        <p className="lead mb-4">
+          Create personalized, engaging messages for gym training leads using advanced AI technology.
+          Save time and increase your conversion rates with tailored communication for fitness enthusiasts.
         </p>
-        <p className="mb-4">
-          Choose from different templates and tone levels to customize your messages for different scenarios.
-        </p>
+        <div className="d-flex justify-content-center gap-3 flex-wrap">
+          <LinkButton 
+          to="/generate" 
+          variant="primary" 
+          size="lg" 
+          className="px-5 py-3"
+        >
+          Start Generating Messages
+          </LinkButton>
+          <LinkButton 
+            to="/batch" 
+            variant="outline-primary" 
+            size="lg" 
+            className="px-5 py-3"
+          >
+            Batch Message Generator <Badge bg="danger">NEW!</Badge>
+          </LinkButton>
+          <LinkButton 
+            to="/formatter" 
+            variant="outline-secondary" 
+            size="lg" 
+            className="px-5 py-3"
+          >
+            Lead Data Formatter <Badge bg="danger">NEW!</Badge>
+          </LinkButton>
+        </div>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <h2 className="text-2xl font-bold mb-4">Available Templates</h2>
-        
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-2">Initial Messages</h3>
-          <div className="border-l-4 border-blue-500 pl-4 py-2 mb-4">
-            <h4 className="font-bold">MAX - Company Account Template</h4>
-            <p className="text-sm text-gray-600">Sender: Max</p>
-            <p className="text-sm text-gray-600">Type: Initial outreach from company account</p>
-            <p className="mt-2 text-gray-800">
-              Hey NAME, Max here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw : )<br/>
-              BTW, (INTERESTS AND TRAITS) love it haha 👍<br/>
-              I am currently looking for 5 people can join my free training project trial!<br/>
-              They get:<br/>
-              ✅ a Personalised Diet Plan<br/>
-              ✅ a Personalised Training Plan<br/>
-              ✅ Telegram Chat Support<br/>
-              ✅ Physical Form Correction<br/>
-              ✅ To improve Mind Muscle Connection<br/>
-              ✅ To make more progress with Less Time and Effort<br/>
-              To push them in the right direction this year 💪🏻<br/>
-              Do you know anyone who may be interested?<br/>
-              PS: How's your gym progress going? : )
-            </p>
-          </div>
-        </div>
-        
-        <div>
-          <h3 className="text-xl font-semibold mb-2">Follow-up Messages</h3>
-          <div className="border-l-4 border-green-500 pl-4 py-2 mb-4">
-            <h4 className="font-bold">BOB FOLLOW UP</h4>
-            <p className="text-sm text-gray-600">Sender: Bob</p>
-            <p className="text-sm text-gray-600">Type: Follow-up message (mentions Max)</p>
-            <p className="mt-2 text-gray-800">
-              Hey (NAME), Bob here, i'm not too sure if my friend Max has reached out to you yet, @max_apolloss<br/>
-              but we are hosting a free training project trial, and 5 people can join us for free : )<br/>
-              They get:<br/>
-              ✅ a Personalised Diet Plan<br/>
-              ✅ a Personalised Training Plan<br/>
-              ✅ Telegram Chat Support<br/>
-              ✅ Physical Form Correction<br/>
-              ✅ To improve Mind Muscle Connection<br/>
-              ✅ To make more progress with Less Time and Effort<br/>
-              To push them in the right direction this year 💪🏻<br/>
-              Would you be opposed to taking a slot for yourself?<br/>
-              P.S. How's your gym progress going? : )
-            </p>
-          </div>
-          
-          <div className="border-l-4 border-purple-500 pl-4 py-2">
-            <h4 className="font-bold">MATTHEW FOLLOW UP</h4>
-            <p className="text-sm text-gray-600">Sender: Matthew</p>
-            <p className="text-sm text-gray-600">Type: Follow-up message (mentions Max)</p>
-            <p className="mt-2 text-gray-800">
-              Hey (NAME), Matthew here, i'm not too sure if my friend Max has reached out to you yet, @max_apolloss<br/>
-              but we are hosting a free training project trial, and 5 people can join us for free : )<br/>
-              They get:<br/>
-              ✅ a Personalised Diet Plan<br/>
-              ✅ a Personalised Training Plan<br/>
-              ✅ Telegram Chat Support<br/>
-              ✅ Physical Form Correction<br/>
-              ✅ To improve Mind Muscle Connection<br/>
-              ✅ To make more progress with Less Time and Effort<br/>
-              To push them in the right direction this year 💪🏻<br/>
-              Would you be opposed to taking a slot for yourself?<br/>
-              P.S. How's your gym progress going? : )
-            </p>
-          </div>
+      <h2 className="text-center mb-4">How It Works</h2>
+      <Row className="mb-5">
+        <Col md={4} className="mb-4">
+          <Card className="h-100 feature-card">
+            <Card.Body>
+              <div className="feature-icon">1</div>
+              <Card.Title>Input Lead Information</Card.Title>
+              <Card.Text>
+                Enter details about your lead, including their name and interests you've noticed from their profile.
+                Support for both single leads and batch processing of up to 200 profiles.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className="mb-4">
+          <Card className="h-100 feature-card">
+            <Card.Body>
+              <div className="feature-icon">2</div>
+              <Card.Title>Select Message Style</Card.Title>
+              <Card.Text>
+                Choose from various message styles including standard or Singaporean English (Singlish) with authentic
+                local phrases like "wah", "lah", "sia", and "leh" to better connect with your audience.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className="mb-4">
+          <Card className="h-100 feature-card">
+            <Card.Body>
+              <div className="feature-icon">3</div>
+              <Card.Title>Generate & Send</Card.Title>
+              <Card.Text>
+                Our AI generates highly personalized messages that match the exact template required,
+                with handcrafted variations based on each lead's unique interests.
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <Row className="mb-5">
+        <Col md={6} className="mb-4">
+          <Card>
+            <Card.Body>
+              <Card.Title>Key Features</Card.Title>
+              <ul>
+                <li><strong>Batch processing</strong> - Handle up to 200 profiles at once</li>
+                <li><strong>Easy data input</strong> - Simple copy-paste of names and traits</li>
+                <li><strong>Singlish support</strong> - Authentic Singaporean English phrases</li>
+                <li><strong>Personalized messaging</strong> - Unique variations for each interest type</li>
+                <li><strong>Multiple platforms</strong> - Instagram and TikTok templates</li>
+                <li><strong>Perfect template matching</strong> - Follows the exact required format</li>
+                <li><strong>Lead data formatter</strong> - Clean and format your lead data</li>
+              </ul>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={6} className="mb-4">
+          <Card>
+            <Card.Body>
+              <Card.Title>Benefits</Card.Title>
+              <ul>
+                <li>Save hours with bulk processing of 100+ leads at once</li>
+                <li>Increase response rates with handcrafted personalized messages</li>
+                <li>Connect better with Singaporean fitness enthusiasts using Singlish</li>
+                <li>Scale your gym training client acquisition efficiently</li>
+                <li>Maintain message quality even with high volume</li>
+                <li>Easy export options for all your generated messages</li>
+                <li>Format and clean lead data for better organization</li>
+              </ul>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <div className="cta-section rounded">
+        <h2>Ready to Grow Your Gym Training Business?</h2>
+        <p className="lead mb-4">
+          Start creating personalized messages that convert fitness enthusiasts into clients.
+          Process up to 200 leads at once with our new batch generator!
+        </p>
+        <div className="d-flex justify-content-center gap-3 flex-wrap">
+          <LinkButton 
+          to="/generate" 
+          variant="primary" 
+          size="lg"
+        >
+            Single Message
+          </LinkButton>
+          <LinkButton 
+            to="/batch" 
+            variant="success" 
+            size="lg"
+          >
+            Batch Generator
+          </LinkButton>
+          <LinkButton 
+            to="/formatter" 
+            variant="info" 
+            size="lg"
+          >
+            Lead Formatter
+          </LinkButton>
         </div>
       </div>
-      
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Tone Levels</h2>
-        <ul className="list-disc pl-6 space-y-2">
-          <li><span className="font-semibold">Level 0:</span> Normal English</li>
-          <li><span className="font-semibold">Level 2:</span> BTW Singlish (only BTW phrase is in Singlish)</li>
-          <li><span className="font-semibold">Level 3:</span> BTW & PS Singlish (BTW and PS sections are in Singlish)</li>
-          <li><span className="font-semibold">Level 4:</span> Full Singlish (entire message except services offered is in Singlish)</li>
-        </ul>
-      </div>
-    </div>
+    </Container>
   );
 };
 
