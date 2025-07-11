@@ -281,6 +281,140 @@ export const generateFirstTraitMessage = (trait: string): string => {
 export const generateSecondTraitMessage = (trait: string): string => {
   const lowerTrait = normalizeTraitText(trait);
   
+  // Clothing Items - Shirts/Tops
+  if (lowerTrait.includes('polo') && (lowerTrait.includes('stylish') || lowerTrait.includes('nice') || lowerTrait.includes('cool'))) {
+    const options = [
+      "Where'd you get your polo from bro? Looks really sharp",
+      "That polo fits you perfectly man — what brand is it",
+      "Your polo game is on point! Where do you shop for them"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('tshirt') || lowerTrait.includes('t-shirt') || lowerTrait.includes('t shirt')) {
+    if (lowerTrait.includes('nice') || lowerTrait.includes('cool') || lowerTrait.includes('awesome')) {
+      const options = [
+        "That tshirt looks great on you — where'd you pick it up",
+        "Cool tshirt choice man! What's your go-to brand",
+        "Your tshirt game is solid — any favorite stores"
+      ];
+      return options[Math.floor(Math.random() * options.length)];
+    }
+  }
+  
+  if (lowerTrait.includes('jacket') && (lowerTrait.includes('stylish') || lowerTrait.includes('cool') || lowerTrait.includes('awesome'))) {
+    const options = [
+      "That jacket is fire bro — where'd you get it from",
+      "Your jacket game is next level! What brand is that",
+      "Love the jacket choice — any favorite places to shop"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('sweater') && (lowerTrait.includes('nice') || lowerTrait.includes('stylish') || lowerTrait.includes('cool'))) {
+    const options = [
+      "That sweater looks cozy and stylish — where'd you find it",
+      "Your sweater game is on point! What's your favorite brand",
+      "Love the sweater choice — perfect for the weather right"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('puffer') && lowerTrait.includes('jacket')) {
+    const options = [
+      "That puffer jacket looks sick — keeping you warm and stylish",
+      "Your puffer game is strong! What brand do you recommend",
+      "Love the puffer choice — perfect for the season right"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Bottoms
+  if (lowerTrait.includes('jeans') && (lowerTrait.includes('nice') || lowerTrait.includes('cool') || lowerTrait.includes('awesome'))) {
+    const options = [
+      "Those jeans in your pic look great — what brand are those",
+      "Your jeans fit perfectly bro — where do you shop for them",
+      "Love the jeans choice — any favorite denim brands"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Accessories
+  if (lowerTrait.includes('sunglasses') || lowerTrait.includes('shades')) {
+    const options = [
+      "Those sunglasses are clean bro — what brand are they",
+      "Your sunglasses game is on point! Where'd you get them",
+      "Love the sunglasses choice — perfect for the sunny weather"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if ((lowerTrait.includes('eyeglasses') || lowerTrait.includes('glasses')) && !lowerTrait.includes('sun')) {
+    const options = [
+      "Your glasses look really good on you — what brand are they",
+      "Those glasses suit you perfectly! Where'd you get them",
+      "Love the glasses choice — great style bro"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('cap') && (lowerTrait.includes('nice') || lowerTrait.includes('cool') || lowerTrait.includes('awesome'))) {
+    const options = [
+      "That cap looks sick on you — where'd you pick it up",
+      "Your cap game is solid! What's your favorite brand",
+      "Love the cap choice — perfect fit bro"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('beanie') && (lowerTrait.includes('cute') || lowerTrait.includes('nice') || lowerTrait.includes('cool'))) {
+    const options = [
+      "That beanie looks cozy and stylish — where'd you get it",
+      "Your beanie game is on point! Perfect for the weather right",
+      "Love the beanie choice — keeps you warm and looking good"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if (lowerTrait.includes('watch') && (lowerTrait.includes('awesome') || lowerTrait.includes('nice') || lowerTrait.includes('cool'))) {
+    const options = [
+      "That watch is clean bro — what brand is it",
+      "Your watch game is solid! Where'd you get it from",
+      "Love the watch choice — perfect accessory game"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Appearance/Style
+  if (lowerTrait.includes('beard') && (lowerTrait.includes('cool') || lowerTrait.includes('nice') || lowerTrait.includes('awesome'))) {
+    const options = [
+      "By the way, solid beard game man — what's your grooming routine",
+      "That beard looks great on you — any grooming tips",
+      "Your beard game is on point! How long you been growing it"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  if ((lowerTrait.includes('hairstyle') || lowerTrait.includes('haircut')) && 
+      (lowerTrait.includes('unique') || lowerTrait.includes('cool') || lowerTrait.includes('awesome'))) {
+    const options = [
+      "Your haircut looks fresh bro — where do you get it done",
+      "That hairstyle suits you perfectly! Who's your barber",
+      "Love the haircut choice — any favorite barbershops"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
+  // Special skills/hobbies
+  if (lowerTrait.includes('magician') || lowerTrait.includes('magic show')) {
+    const options = [
+      "You still doing magic shows lately? That's such a cool skill",
+      "How long you been doing magic? That's awesome bro",
+      "Magic is such a unique talent — what got you into it"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  
   // Family/Relationships (Very Common)
   if (lowerTrait.includes('has gf') || lowerTrait.includes('girlfriend')) {
     return `How's things with the girlfriend`;
@@ -365,18 +499,9 @@ export const generateSecondTraitMessage = (trait: string): string => {
     return `How was the jetski ride`;
   }
   
-  // Fashion/Style Items (as second trait)
-  if (lowerTrait.includes('glasses') || lowerTrait.includes('eyeglasses')) {
-    return `Where did you get those cool glasses`;
-  }
-  if (lowerTrait.includes('watch')) {
-    return `Where did you get that nice watch`;
-  }
-  if (lowerTrait.includes('jacket')) {
+  // Fashion/Style Items (as second trait) - Legacy patterns kept for compatibility
+  if (lowerTrait.includes('jacket') && !lowerTrait.includes('puffer')) {
     return `Where did you get that stylish jacket`;
-  }
-  if (lowerTrait.includes('sunglasses') || lowerTrait.includes('shades')) {
-    return `Where did you get those cool shades`;
   }
   if (lowerTrait.includes('hairstyle') || lowerTrait.includes('haircut')) {
     return `Where did you get that fresh cut`;
@@ -572,6 +697,36 @@ const addSinglishModifiers = (message: string, section: string): string => {
 };
 
 /**
+ * Helper function to add appropriate emoji to PS line based on content
+ */
+const addAppropriateEmoji = (psLine: string): string => {
+  let emoji = '';
+  
+  // Add appropriate emoji based on content
+  if (psLine.includes('sunglasses') || psLine.includes('shades')) {
+    emoji = ' 😎';
+  } else if (psLine.includes('jacket') || psLine.includes('fire')) {
+    emoji = ' 🔥';
+  } else if (psLine.includes('beanie') || psLine.includes('sweater') || psLine.includes('cozy')) {
+    emoji = ' 🧣';
+  } else if (psLine.includes('watch')) {
+    emoji = ' ⌚';
+  } else if (psLine.includes('cap')) {
+    emoji = ' 🧢';
+  } else if (psLine.includes('glasses') && !psLine.includes('sun')) {
+    emoji = ' 👓';
+  } else if (psLine.includes('beard') || psLine.includes('haircut') || psLine.includes('barber')) {
+    emoji = ' ✂️';
+  } else if (psLine.includes('puffer')) {
+    emoji = ' 🧥';
+  } else if (psLine.includes('magic')) {
+    emoji = ' ✨';
+  }
+  
+  return psLine + emoji;
+};
+
+/**
  * Generates the complete message based on the template, traits, and tone level
  */
 export const generateTemplateMessage = (
@@ -585,7 +740,10 @@ export const generateTemplateMessage = (
   
   // Generate personalized trait messages
   const firstTraitMessage = generateFirstTraitMessage(firstTrait);
-  const secondTraitMessage = generateSecondTraitMessage(secondTrait);
+  let secondTraitMessage = generateSecondTraitMessage(secondTrait);
+  
+  // Add appropriate emoji to PS section
+  secondTraitMessage = addAppropriateEmoji(secondTraitMessage);
   
   // Apply tone modifiers based on level
   const introWithTone = applyToneModifiers(`Jet here btw, I saw that you were following a couple gym accounts, keep it up in the gym btw`, 'intro', toneLevel);
@@ -616,6 +774,9 @@ Do you know anyone who may be interested?`;
       .replace('Do you know anyone who may be interested?', 'Got anyone interested or not?');
   }
   
+  // Format PS with italics
+  const formattedPs = `*${psWithTone}?*`;
+  
   // Construct the final message
   const message = `Hey ${name}, ${introWithTone} : )  
 
@@ -627,7 +788,7 @@ ${servicesSection}
 
 ${bodyOutro}  
 
-PS: ${psWithTone} : )`;
+PS: ${formattedPs} : )`;
 
   return message;
 };

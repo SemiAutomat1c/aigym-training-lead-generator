@@ -14,6 +14,7 @@ const TestExamples: React.FC = () => {
 
   // Sample test cases from real client data
   const testCases = [
+    // Original examples
     {
       name: "Henry",
       traits: "works at (ig/mindmusclesg) / traveling with fam",
@@ -24,35 +25,67 @@ const TestExamples: React.FC = () => {
       traits: "content creator (tt/ @gibsaw) / traveling",
       tone: "level3"
     },
+    
+    // New clothing/appearance examples
     {
-      name: "Jason",
-      traits: "business (leaderfit-equipement.com) / stylish glasses",
-      tone: "level4"
-    },
-    {
-      name: "Mike",
-      traits: "work (ig/physiobusinessmentorsg/) / business owner",
+      name: "James",
+      traits: "fitness / stylish polo",
       tone: "level2"
     },
     {
-      name: "David",
-      traits: "fitness / has gf",
+      name: "Michael",
+      traits: "athlete / nice tshirt",
       tone: "level3"
     },
     {
-      name: "Sam",
-      traits: "stylish jacket / nice watch",
+      name: "William",
+      traits: "bodybuilding / stylish jacket",
+      tone: "level4"
+    },
+    {
+      name: "Daniel",
+      traits: "running / cool sunglasses",
+      tone: "level2"
+    },
+    {
+      name: "Matthew",
+      traits: "swimming / nice watch",
+      tone: "level3"
+    },
+    {
+      name: "Christopher",
+      traits: "fitness / cool beard",
+      tone: "level4"
+    },
+    {
+      name: "Andrew",
+      traits: "powerlifting / unique hairstyle",
+      tone: "level2"
+    },
+    {
+      name: "Joshua",
+      traits: "cycling / nice sweater",
+      tone: "level3"
+    },
+    {
+      name: "David",
+      traits: "boxing / puffer jacket",
       tone: "level4"
     },
     {
       name: "Ryan",
-      traits: "business owner (@hydroflux_singapore) / travel w gf",
+      traits: "muay thai / cool cap",
       tone: "level2"
     },
     {
-      name: "Thomas",
-      traits: "co founder (ig/@ascendvisuals_) / adventure",
+      name: "Tyler",
+      traits: "rock climbing / nice beanie",
       tone: "level3"
+    },
+    {
+      name: "Brandon",
+      traits: "magician / cool eyeglasses",
+      tone: "level4"
     }
   ];
 

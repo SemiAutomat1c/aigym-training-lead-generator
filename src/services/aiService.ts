@@ -18,6 +18,36 @@ interface MessageRequest {
   template: string;
 }
 
+/**
+ * Helper function to add appropriate emoji to PS line based on content
+ */
+const addAppropriateEmoji = (psLine: string): string => {
+  let emoji = '';
+  
+  // Add appropriate emoji based on content
+  if (psLine.includes('sunglasses') || psLine.includes('shades')) {
+    emoji = ' 😎';
+  } else if (psLine.includes('jacket') || psLine.includes('fire')) {
+    emoji = ' 🔥';
+  } else if (psLine.includes('beanie') || psLine.includes('sweater') || psLine.includes('cozy')) {
+    emoji = ' 🧣';
+  } else if (psLine.includes('watch')) {
+    emoji = ' ⌚';
+  } else if (psLine.includes('cap')) {
+    emoji = ' 🧢';
+  } else if (psLine.includes('glasses') && !psLine.includes('sun')) {
+    emoji = ' 👓';
+  } else if (psLine.includes('beard') || psLine.includes('haircut') || psLine.includes('barber')) {
+    emoji = ' ✂️';
+  } else if (psLine.includes('puffer')) {
+    emoji = ' 🧥';
+  } else if (psLine.includes('magic')) {
+    emoji = ' ✨';
+  }
+  
+  return psLine + emoji;
+};
+
 export const generateMessage = async (request: MessageRequest): Promise<string> => {
   const { leadInfo, tone, template } = request;
   let message = '';
@@ -63,22 +93,30 @@ const getFollowUpMessage = (leadInfo: LeadInfo, tone: string): string => {
   message += `Would you be opposed to taking a slot for yourself?\n\n`;
   
   // Generate personalized PS based on interests if available
-  let psMessage = "P.S. How's your gym progress going?";
+  let psMessage = "How's your gym progress going";
   if (interests && interests.trim()) {
     // Use the second trait for PS personalization if available
     if (traits.secondTrait && traits.secondTrait.trim()) {
       const { generateSecondTraitMessage, applyToneModifiers } = require('./messageTemplates');
-      const personalizedPs = generateSecondTraitMessage(traits.secondTrait);
-      psMessage = `P.S. ${personalizedPs}?`;
+      let personalizedPs = generateSecondTraitMessage(traits.secondTrait);
+      
+      // Add appropriate emoji based on content
+      personalizedPs = addAppropriateEmoji(personalizedPs);
       
       // Apply tone modifiers to PS section
       if (tone === 'level3' || tone === 'level4') {
-        psMessage = applyToneModifiers(psMessage, 'ps', tone);
+        personalizedPs = applyToneModifiers(personalizedPs, 'ps', tone);
       }
+      
+      // Format PS with italics
+      psMessage = `*${personalizedPs}?*`;
     }
+  } else {
+    // Default PS with italics
+    psMessage = `*How's your gym progress going?*`;
   }
   
-  message += psMessage + " : )";
+  message += `PS: ${psMessage} : )`;
 
   // Apply Singlish based on tone level
   if (tone === 'level2') {
